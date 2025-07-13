@@ -1,0 +1,36 @@
+﻿@model YourNamespace.Models.StudentClassesViewModel
+
+@{
+    ViewBag.Title = "Manage My Classes";
+}
+
+<h2>My Classes</h2>
+
+<table style="width:100%; border-collapse: collapse;">
+    <thead>
+        <tr>
+            <th style="border: 1px solid #ddd; padding: 8px;">Class Name</th>
+            <th style="border: 1px solid #ddd; padding: 8px;">Time</th>
+            <th style="border: 1px solid #ddd; padding: 8px;">Location</th>
+            <th style="border: 1px solid #ddd; padding: 8px;">Exam Date</th>
+            <th style="border: 1px solid #ddd; padding: 8px;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var cls in Model.Classes)
+        {
+        <tr>
+            <td style="border: 1px solid #ddd; padding: 8px;">@cls.Name</td>
+            <td style="border: 1px solid #ddd; padding: 8px;">@cls.Time.ToString("g")</td>
+            <td style="border: 1px solid #ddd; padding: 8px;">@cls.Location</td>
+            <td style="border: 1px solid #ddd; padding: 8px;">@cls.ExamDate.ToString("d")</td>
+            <td style="border: 1px solid #ddd; padding: 8px;">
+                <form method="post" action="/Student/RemoveClass">
+                    <input type="hidden" name="classId" value="@cls.Id" />
+                    <button type="submit" style="background-color: red; color: white;">Remove</button>
+                </form>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
