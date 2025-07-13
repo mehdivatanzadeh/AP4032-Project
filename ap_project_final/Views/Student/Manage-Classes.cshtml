@@ -13,6 +13,7 @@
             <th style="border: 1px solid #ddd; padding: 8px;">Time</th>
             <th style="border: 1px solid #ddd; padding: 8px;">Location</th>
             <th style="border: 1px solid #ddd; padding: 8px;">Exam Date</th>
+            <th style="border: 1px solid #ddd; padding: 8px;">Score</th>
             <th style="border: 1px solid #ddd; padding: 8px;">Actions</th>
         </tr>
     </thead>
@@ -24,6 +25,13 @@
             <td style="border: 1px solid #ddd; padding: 8px;">@cls.Time.ToString("g")</td>
             <td style="border: 1px solid #ddd; padding: 8px;">@cls.Location</td>
             <td style="border: 1px solid #ddd; padding: 8px;">@cls.ExamDate.ToString("d")</td>
+            <td style="border: 1px solid #ddd; padding: 8px;">
+                <form method="post" action="/Student/UpdateScore">
+                    <input type="hidden" name="classId" value="@cls.Id" />
+                    <input type="number" name="score" value="@cls.Score" style="width: 80px;" />
+                    <button type="submit">Update</button>
+                </form>
+            </td>
             <td style="border: 1px solid #ddd; padding: 8px;">
                 <form method="post" action="/Student/RemoveClass">
                     <input type="hidden" name="classId" value="@cls.Id" />
