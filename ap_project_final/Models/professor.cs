@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ap_project_final.Models
 {
@@ -23,8 +24,9 @@ namespace ap_project_final.Models
         [Required]
         public string Password { get; set; } 
 
-        public DateTime HireDate { get; set; } 
+        public DateTime HireDate { get; set; }
 
+        [Column(TypeName = "decimal(18, 2)")]
         public decimal Salary { get; set; }
 
         public ICollection<Course> Courses { get; set; }
