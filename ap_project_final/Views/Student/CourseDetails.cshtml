@@ -1,0 +1,14 @@
+﻿@model ap_project_final.Models.CourseDetailsViewModel
+@{
+    ViewBag.Title = "Course Details";
+}
+<h2>Course Details</h2>
+<ul>
+    <li>Classroom Number: @Model.ClassroomNumber</li>
+    <li>Building: @Model.Building</li>
+    <li>Instructor: @Model.InstructorName</li>
+    <li>Class Time: @Model.ClassTime</li>
+    <li>Exam Time: @Model.ExamTime</li>
+    <li>Your Score: @Model.Score</li>
+</ul>
+<a href="/Student/ManageCourses">Back to Courses</a>
