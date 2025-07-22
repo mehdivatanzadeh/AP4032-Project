@@ -18,6 +18,7 @@ namespace ap_project_final.Controllers
             _context = context;
         }
 
+       
         // --- Professor Management ---
 
         public async Task<IActionResult> InstructorsList()
@@ -225,6 +226,10 @@ namespace ap_project_final.Controllers
             TempData["Message"] = "Student assigned successfully.";
             return RedirectToAction("ManageCourse", new { id = courseId });
         }
+
+        
+      
+        
         public async Task<IActionResult> ManageUsers()
         {
             var model = new UserManagementViewModel
