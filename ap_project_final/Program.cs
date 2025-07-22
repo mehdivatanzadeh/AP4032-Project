@@ -2,7 +2,15 @@ using ap_project_final.Data;
 using Microsoft.EntityFrameworkCore;
 using ap_project_final.Data;
 
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddAuthentication("MyCookieAuth")
+    .AddCookie("MyCookieAuth", options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+        options.Cookie.Name = "MyAppCookie"; // Custom cookie name
+    });
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

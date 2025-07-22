@@ -1,5 +1,6 @@
 ﻿using ap_project_final.Data;
 using ap_project_final.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -261,12 +262,9 @@ namespace ap_project_final.Controllers
             };
             return View(model);
         }
+        [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
-            if (HttpContext.Session.GetString("UserRole") != "Admin")
-            {
-                return RedirectToAction("Login", "Account");
-            }
             return View();
         }
     }

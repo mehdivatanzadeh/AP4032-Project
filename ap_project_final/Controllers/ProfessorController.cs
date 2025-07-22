@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace ap_project_final.Controllers
 {
@@ -74,26 +76,17 @@ namespace ap_project_final.Controllers
             };
             return View(model);
         }
+
+        [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> Index()
         {
-            if (HttpContext.Session.GetString("UserRole") != "Instructor")
-            {
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdStr))
                 return RedirectToAction("Login", "Account");
-            }
-
-            int? instructorId = HttpContext.Session.GetInt32("UserId");
-            if (instructorId == null)
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            // Optionally, fetch instructor info
-            var instructor = await _context.Professors.FindAsync(instructorId.Value);
+            int instructorId = int.Parse(userIdStr);
+            var instructor = await _context.Professors.FindAsync(instructorId);
             if (instructor == null)
-            {
                 return RedirectToAction("Login", "Account");
-            }
-
             return View(instructor);
         }
     }

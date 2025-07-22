@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 
 namespace ap_project_final.Controllers
@@ -33,51 +35,16 @@ namespace ap_project_final.Controllers
             TempData["Message"] = "You have successfully dropped the course.";
             return RedirectToAction("MyCourses");
         }
-        public async Task<IActionResult> CourseDetails(int courseId)
-        {
-            var studentId = /* retrieve logged-in student Id */;
-
-            var course = await _context.Courses
-                .Include(c => c.Classroom)
-                .Include(c => c.Instructor)
-                .FirstOrDefaultAsync(c => c.Id == courseId);
-
-            if (course == null)
-                return NotFound();
-
-            var enrollment = await _context.Enrollments
-                .FirstOrDefaultAsync(e => e.CourseId == courseId && e.StudentId == studentId);
-
-            var model = new CourseDetailsViewModel
-            {
-                ClassroomNumber = course.Classroom.Number,
-                Building = course.Classroom.Building,
-                InstructorName = course.Instructor.FirstName + " " + course.Instructor.LastName,
-                ClassTime = course.ClassTime.ToString(),
-                ExamTime = course.ExamTime.ToString(),
-                Score = enrollment?.Grade
-            };
-
-            return View(model);
-        }
+        [Authorize(Roles = "Student")]
         public async Task<IActionResult> Index()
         {
-            if (HttpContext.Session.GetString("UserRole") != "Student")
-            {
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdStr))
                 return RedirectToAction("Login", "Account");
-            }
-
-            int? studentId = HttpContext.Session.GetInt32("UserId");
-            if (studentId == null)
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            var student = await _context.Students.FindAsync(studentId.Value);
+            int studentId = int.Parse(userIdStr);
+            var student = await _context.Students.FindAsync(studentId);
             if (student == null)
-            {
                 return RedirectToAction("Login", "Account");
-            }
             return View(student);
         }
     }
