@@ -1,0 +1,22 @@
+﻿@model IEnumerable<ap_project_final.Models.Classroom>
+    @{
+    ViewBag.Title = "Manage Classes";
+    var courseId = ViewBag.CourseId;        
+    var courseName = ViewBag.CourseName;    
+    }
+    <h2>Manage Classes for @courseName</h2>
+
+    <ul>
+        @foreach(var class in Model)
+    {
+        <li>
+            @class.Name
+            <form method="post" asp-action="RemoveClassroom" asp-route-classroomId="@class.Id" style="display:inline;">
+                <button type="submit">Remove</button>
+            </form>
+            <a href="/Admin/ManageParticipants/@class.Id">Participants</a>
+        </li>
+    }
+    </ul>
+
+    <a class="btn btn-primary" href="/Admin/AddClassroom?courseId=@courseId">Add Classroom</a>
