@@ -1,0 +1,37 @@
+﻿@model ap_project_final.Models.ParticipantListViewModel
+@{
+    ViewBag.Title = "Manage Participants";
+}
+<h2>Participants in Classroom @Model.ClassroomName</h2>
+
+<h3>Instructors</h3>
+<ul>
+    @foreach (var instructor in Model.Instructors)
+    {
+    <li>
+        @instructor.Name
+        <form method="post" asp-action="RemoveParticipant" asp-route-participantId="@instructor.Id" asp-route-participantType="Instructor" style="display:inline;">
+            <button type="submit">Remove</button>
+        </form>
+    </li>
+    }
+</ul>
+
+<h3>Students</h3>
+<ul>
+    @foreach (var student in Model.Students)
+    {
+    <li>
+        @student.Name
+        <form method="post" asp-action="RemoveParticipant" asp-route-participantId="@student.Id" asp-route-participantType="Student" style="display:inline;">
+            <button type="submit">Remove</button>
+        </form>
+    </li>
+    }
+</ul>
+
+<a class="btn btn-primary" href="/Admin/AssignStudent/@Model.ClassroomId">Add Student</a>
+@if (!Model.Instructors.Any())
+{
+<a class="btn btn-primary" href="/Admin/AssignInstructor/@Model.ClassroomId">Add Instructor</a>
+}

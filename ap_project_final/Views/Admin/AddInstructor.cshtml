@@ -1,0 +1,32 @@
+﻿@model ap_project_final.Models.Professor
+@{
+    ViewBag.Title = "Add Instructor";
+}
+<h2>Add Instructor</h2>
+<form method="post" asp-action="AddInstructor">
+    <div>
+        <label>Instructor ID:</label>
+        <input asp-for="InstructorId" required />
+    </div>
+    <div>
+        <label>First Name:</label>
+        <input asp-for="FirstName" required />
+    </div>
+    <div>
+        <label>Last Name:</label>
+        <input asp-for="LastName" required />
+    </div>
+    <div>
+        <label>Email:</label>
+        <input asp-for="Email" required />
+    </div>
+    <div>
+        <label>Password:</label>
+        <input asp-for="Password" type="password" required />
+    </div>
+    <div>
+        <label>Hire Date:</label>
+        <input asp-for="HireDate" type="date" required />
+    </div>
+    <button type="submit">Add Instructor</button>
+</form>

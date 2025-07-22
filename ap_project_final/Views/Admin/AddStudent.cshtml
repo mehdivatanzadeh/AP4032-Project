@@ -1,0 +1,30 @@
+﻿@model ap_project_final.Models.Student
+@{
+    ViewBag.Title = "Add Student";
+}
+<h2>Add Student</h2>
+<form method="post" asp-action="AddStudent">
+    <div>
+        <label>Student ID:</label>
+        <input asp-for="StudentId" required />
+    </div>
+    <div>
+        <label>First Name:</label>
+        <input asp-for="FirstName" required />
+    </div>
+    <div>
+        <label>Last Name:</label>
+        <input asp-for="LastName" required />
+    </div>
+    <div>
+        <label>Email:</label>
+        <input asp-for="Email" type="email" required />
+    </div>
+    <div>
+        <label>Password:</label>
+        <input asp-for="Password" type="password" required />
+    </div>
+    <div>
+        <label>Entry Date:</label>
+        <input asp-for="EntryDate" type="date" required />
+    </div>
