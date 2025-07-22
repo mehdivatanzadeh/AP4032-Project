@@ -3,6 +3,8 @@ using ap_project_final.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace ap_project_final.Controllers
 {
@@ -57,6 +59,26 @@ namespace ap_project_final.Controllers
             };
 
             return View(model);
+        }
+        public async Task<IActionResult> Index()
+        {
+            if (HttpContext.Session.GetString("UserRole") != "Student")
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            int? studentId = HttpContext.Session.GetInt32("UserId");
+            if (studentId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var student = await _context.Students.FindAsync(studentId.Value);
+            if (student == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            return View(student);
         }
     }
 }

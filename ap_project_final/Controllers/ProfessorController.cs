@@ -1,12 +1,100 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ap_project_final.Data;
+using ap_project_final.Models;
+using Microsoft.AspNetCore.Mvc;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace ap_project_final.Controllers
 {
-    public class ProfessorController : Controller
+    public class InstructorController : Controller
     {
-        public IActionResult Index()
+        private readonly ApplicationDbContext _context;
+
+        public InstructorController(ApplicationDbContext context)
         {
-            return View();
+            _context = context;
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddOrUpdateGrade(int enrollmentId, double? grade)
+        {
+            var enrollment = await _context.Enrollments.FindAsync(enrollmentId);
+            if (enrollment == null) return NotFound();
+
+            if (grade.HasValue && (grade < 0 || grade > 20))
+            {
+                TempData["Error"] = "Grade must be between 0 and 20.";
+                return RedirectToAction("CourseDetails", new { courseId = enrollment.CourseId });
+            }
+
+            enrollment.Grade = grade;
+            await _context.SaveChangesAsync();
+            TempData["Message"] = "Grade updated successfully.";
+            return RedirectToAction("CourseDetails", new { courseId = enrollment.CourseId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveStudentFromCourse(int enrollmentId)
+        {
+            var enrollment = await _context.Enrollments.FindAsync(enrollmentId);
+            if (enrollment == null) return NotFound();
+
+            int courseId = enrollment.CourseId;
+            _context.Enrollments.Remove(enrollment);
+            await _context.SaveChangesAsync();
+
+            TempData["Message"] = "Student removed from class successfully.";
+            return RedirectToAction("CourseDetails", new { courseId = courseId });
+        }
+        public async Task<IActionResult> ManageParticipants(int classroomId)
+        {
+            var classroom = await _context.Classrooms.FindAsync(classroomId);
+            if (classroom == null)
+                return NotFound();
+
+            var students = await _context.Enrollments
+                .Where(e => e.Course.Id == classroomId)
+                .Include(e => e.Student)
+                .Select(e => e.Student)
+                .ToListAsync();
+
+            var instructors = await _context.Professors
+                .Where(i => i.Courses.Any(c => c.Id == classroomId))
+                .ToListAsync();
+
+            var model = new ParticipantListViewModel
+            {
+                ClassroomName = classroom.Building,
+                ClassroomId = classroom.Id,
+                Students = students,
+                Instructors = instructors
+            };
+            return View(model);
+        }
+        public async Task<IActionResult> Index()
+        {
+            if (HttpContext.Session.GetString("UserRole") != "Instructor")
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            int? instructorId = HttpContext.Session.GetInt32("UserId");
+            if (instructorId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Optionally, fetch instructor info
+            var instructor = await _context.Professors.FindAsync(instructorId.Value);
+            if (instructor == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            return View(instructor);
         }
     }
 }

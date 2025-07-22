@@ -18,7 +18,11 @@ namespace ap_project_final.Models
 
         public string Description { get; set; } 
 
-        public DateTime ExamDate { get; set; } 
+        public DateTime ExamDate { get; set; }
+        public DayOfWeek ClassDay { get; set; }
+        public TimeSpan StartTime { get; set; }
+        public int ClassroomId { get; set; }
+        public Classroom Classroom { get; set; }
 
         public int ProfessorId { get; set; } 
 

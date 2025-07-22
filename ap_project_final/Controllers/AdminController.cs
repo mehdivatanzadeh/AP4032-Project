@@ -224,5 +224,50 @@ namespace ap_project_final.Controllers
             TempData["Message"] = "Student assigned successfully.";
             return RedirectToAction("ManageCourse", new { id = courseId });
         }
+        public async Task<IActionResult> ManageUsers()
+        {
+            var model = new UserManagementViewModel
+            {
+                Students = await _context.Students.ToListAsync(),
+                Professors = await _context.Professors.ToListAsync()
+            };
+            return View(model);
+        }
+        public async Task<IActionResult> ManageParticipants(int classroomId)
+        {
+            // Fetch classroom info
+            var classroom = await _context.Classrooms.FindAsync(classroomId);
+            if (classroom == null)
+                return NotFound();
+
+            // Fetch students enrolled in this classroom
+            var students = await _context.Enrollments
+                .Where(e => e.Course.Id == classroomId)
+                .Include(e => e.Student)
+                .Select(e => e.Student)
+                .ToListAsync();
+
+            // If instructors are involved, fetch them similarly
+            var instructors = await _context.Professors
+                .Where(i => i.Courses.Any(c => c.Id == classroomId))
+                .ToListAsync();
+
+            var model = new ParticipantListViewModel
+            {
+                ClassroomName = classroom.Building,
+                ClassroomId = classroom.Id,
+                Students = students,
+                Instructors = instructors
+            };
+            return View(model);
+        }
+        public IActionResult Index()
+        {
+            if (HttpContext.Session.GetString("UserRole") != "Admin")
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            return View();
+        }
     }
 }

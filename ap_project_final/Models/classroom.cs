@@ -5,6 +5,8 @@
         public int Id { get; set; }
         public string Building { get; set; } 
         public string RoomNumber { get; set; } 
-        public int Capacity { get; set; } 
+        public int Capacity { get; set; }
+        public ICollection<Course> Courses { get; set; }
+
     }
 }
