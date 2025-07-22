@@ -1,16 +1,15 @@
-<<<<<<< HEAD
-﻿
 
-=======
-﻿@model YourNamespace.Models.UsersViewModel
->>>>>>> bbec587d5a12f9920cf41e2dbece596ac7c5a99b
+@model YourNamespace.Models.UsersViewModel
+
+
+
 @{
     ViewBag.Title = "Manage Users";
 }
 
 <h2>Manage Users</h2>
 
-<<<<<<< HEAD
+
 <h3>Students</h3>
 <ul>
     @foreach (var student in Model.Students)
@@ -23,21 +22,21 @@
 </ul>
 <button style="margin-top:10px;" onclick="location.href='/Admin/AddStudent'">Add Student</button>
 
-=======
->>>>>>> bbec587d5a12f9920cf41e2dbece596ac7c5a99b
+
 <h3>Instructors</h3>
 <ul>
     @foreach (var instructor in Model.Instructors)
     {
-<<<<<<< HEAD
+
         <li>
             @instructor.Name
             <button style="margin-left:10px;" onclick="location.href='/Admin/RemoveInstructor/@instructor.Id'">Remove</button>
         </li>
     }
 </ul>
+
 <button style="margin-top:10px;" onclick="location.href='/Admin/AddInstructor'">Add Instructor</button>
-=======
+
     <li>
         @instructor.Name
         <form method="post" asp-action="DeleteInstructor" asp-route-id="@instructor.Id" style="display:inline;">
@@ -63,4 +62,6 @@
 <br />
 <a class="btn btn-primary" href="/Admin/AddStudent">Add Student</a>
 <a class="btn btn-primary" href="/Admin/AddInstructor">Add Instructor</a>
->>>>>>> bbec587d5a12f9920cf41e2dbece596ac7c5a99b
+
+<button style="margin-top:10px;" onclick="location.href='/Admin/AddInstructor'">Add Instructor</button>
+
