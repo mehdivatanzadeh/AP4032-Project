@@ -3,7 +3,7 @@
     ViewBag.Title = "Add Student";
 }
 <h2>Add Student</h2>
-<form method="post" asp-action="AddStudent">
+<form method="post" asp-action="AddStudent" asp-controller="StudentController">
     <div>
         <label>Student ID:</label>
         <input asp-for="StudentId" required />
@@ -27,4 +27,5 @@
     <div>
         <label>Entry Date:</label>
         <input asp-for="EntryDate" type="date" required />
-    </div>
+    </div
+</form>

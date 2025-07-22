@@ -7,14 +7,14 @@
     <h2>Manage Classes for @courseName</h2>
 
     <ul>
-        @foreach(var class in Model)
+        @foreach(var classroom in Model)
     {
         <li>
-            @class.Name
-            <form method="post" asp-action="RemoveClassroom" asp-route-classroomId="@class.Id" style="display:inline;">
+            
+            <form method="post" asp-action="RemoveClassroom" asp-route-classroomId="@classroom.Id" style="display:inline;">
                 <button type="submit">Remove</button>
             </form>
-            <a href="/Admin/ManageParticipants/@class.Id">Participants</a>
+            <a href="/Admin/ManageParticipants/@classroom.Id">Participants</a>
         </li>
     }
     </ul>

@@ -5,6 +5,8 @@
         public string ClassroomName { get; set; }
         public int ClassroomId { get; set; }
         public List<Student> Students { get; set; }
-        public List<Professor> Instructors { get; set; } 
+        public List<Professor> Instructors { get; set; }
+
+        public List<Enrollment> Enrollments { get; set; }
     }
 }

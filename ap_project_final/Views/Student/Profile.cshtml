@@ -1,41 +1,4 @@
-<<<<<<< HEAD
-﻿@model YourNamespace.Models.StudentProfileViewModel
-
-<h2>My Profile</h2>
-
-<h3>Passed Courses</h3>
-<table style="width:100%; border-collapse: collapse;">
-    <thead>
-        <tr>
-            <th style="border: 1px solid #ddd; padding: 8px;">Course Name</th>
-            <th style="border: 1px solid #ddd; padding: 8px;">Semester</th>
-            <th style="border: 1px solid #ddd; padding: 8px;">Score</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach(var course in Model.PassedCourses)
-        {
-        <tr>
-            <td style="border: 1px solid #ddd; padding: 8px;">@course.Name</td>
-            <td style="border: 1px solid #ddd; padding: 8px;">@course.Semester</td>
-            <td style="border: 1px solid #ddd; padding: 8px;">@course.Score</td>
-        </tr>
-        }
-    </tbody>
-</table>
-
-<h3>Average Score per Semester</h3>
-<ul>
-    @foreach(var sem in Model.SemesterAverages)
-    {
-    <li>Semester @sem.Semester: @sem.AverageScore.ToString("F2")</li>
-    }
-</ul>
-
-<h3>Total Average Score</h3>
-<p>@Model.TotalAverageScore.ToString("F2")</p>
-=======
-﻿@model ap_project_final.Models.Student
+@model ap_project_final.Models.Student
 @{
     ViewBag.Title = "My Profile";
 }
@@ -48,4 +11,4 @@
     <li>Entry Date: @Model.EntryDate.ToString("yyyy-MM-dd")</li>
     <li>Password: @Model.Password</li> 
 </ul>
->>>>>>> bbec587d5a12f9920cf41e2dbece596ac7c5a99b
+

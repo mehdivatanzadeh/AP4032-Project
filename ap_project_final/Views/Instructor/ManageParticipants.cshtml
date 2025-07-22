@@ -6,21 +6,21 @@
 
 <h3>Students</h3>
 <ul>
-    @foreach (var student in Model.Students)
+    @foreach (var enrollment in Model.Enrollments)
     {
     <li>
-        @student.Name
+        @enrollment.Student.LastName
 
 
-        <form method="post" asp-action="RemoveParticipant" asp-route-participantId="@student.Id" asp-route-participantType="Student" style="display:inline;">
+        <form method="post" asp-action="RemoveParticipant" asp-route-participantId="@enrollment.Student.Id" asp-route-participantType="Student" style="display:inline;">
             <button type="submit">Remove</button>
         </form>
 
 
         <form method="post" asp-action="AddOrUpdateGrade" style="display:inline; margin-left:10px;">
-            <input type="hidden" name="enrollmentId" value="@student.EnrollmentId" />
+            <input type="hidden" name="enrollmentId" value="@enrollment.Id" />
             <input type="number" name="grade" min="0" max="20" step="0.1"
-                   value="@(student.Grade.HasValue ? student.Grade.Value.ToString() : "")"
+                   value="@(enrollment.Grade.HasValue ? enrollment.Grade.Value.ToString() : "")"
                    style="width:60px;" />
             <button type="submit">Save Grade</button>
         </form>
