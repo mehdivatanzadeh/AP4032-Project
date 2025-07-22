@@ -1,10 +1,14 @@
-﻿
+
+@model YourNamespace.Models.UsersViewModel
+
+
 
 @{
     ViewBag.Title = "Manage Users";
 }
 
 <h2>Manage Users</h2>
+
 
 <h3>Students</h3>
 <ul>
@@ -18,14 +22,46 @@
 </ul>
 <button style="margin-top:10px;" onclick="location.href='/Admin/AddStudent'">Add Student</button>
 
+
 <h3>Instructors</h3>
 <ul>
     @foreach (var instructor in Model.Instructors)
     {
+
         <li>
             @instructor.Name
             <button style="margin-left:10px;" onclick="location.href='/Admin/RemoveInstructor/@instructor.Id'">Remove</button>
         </li>
     }
 </ul>
+
 <button style="margin-top:10px;" onclick="location.href='/Admin/AddInstructor'">Add Instructor</button>
+
+    <li>
+        @instructor.Name
+        <form method="post" asp-action="DeleteInstructor" asp-route-id="@instructor.Id" style="display:inline;">
+            <button type="submit">Remove</button>
+        </form>
+    </li>
+    }
+</ul>
+
+<h3>Students</h3>
+<ul>
+    @foreach (var student in Model.Students)
+    {
+    <li>
+        @student.Name
+        <form method="post" asp-action="DeleteStudent" asp-route-id="@student.Id" style="display:inline;">
+            <button type="submit">Remove</button>
+        </form>
+    </li>
+    }
+</ul>
+
+<br />
+<a class="btn btn-primary" href="/Admin/AddStudent">Add Student</a>
+<a class="btn btn-primary" href="/Admin/AddInstructor">Add Instructor</a>
+
+<button style="margin-top:10px;" onclick="location.href='/Admin/AddInstructor'">Add Instructor</button>
+

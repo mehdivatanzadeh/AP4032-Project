@@ -1,0 +1,14 @@
+﻿@model IEnumerable<ap_project_final.Models.Classroom>
+    @{
+    ViewBag.Title = "Manage Classes";
+    }
+    <h2>Manage Classes</h2>
+
+    <ul>
+        @foreach(var class in Model)
+    {
+        <li>
+            <a href="/Instructor/ManageParticipants/@class.Id">@class.Name</a>
+        </li>
+    }
+    </ul>

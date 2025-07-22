@@ -1,0 +1,19 @@
+﻿@model IEnumerable<ap_project_final.Models.Course>
+    @{
+    ViewBag.Title = "Manage Courses";
+    }
+    <h2>Manage Courses</h2>
+
+    <ul>
+        @foreach(var course in Model)
+    {
+        <li>
+            <a href="/Admin/ManageClasses/@course.Id">@course.Name</a>
+            <form method="post" asp-action="DeleteCourse" asp-route-id="@course.Id" style="display:inline;">
+                <button type="submit">Remove</button>
+            </form>
+        </li>
+    }
+    </ul>
+
+    <a class="btn btn-primary" href="/Admin/AddCourse">Add Course</a>

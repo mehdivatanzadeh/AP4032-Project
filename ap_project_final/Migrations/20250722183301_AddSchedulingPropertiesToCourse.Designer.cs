@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ap_project_final.Data;
 
@@ -11,9 +12,11 @@ using ap_project_final.Data;
 namespace ap_project_final.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250722183301_AddSchedulingPropertiesToCourse")]
+    partial class AddSchedulingPropertiesToCourse
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,13 +57,11 @@ namespace ap_project_final.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-
                     b.Property<int>("ClassDay")
                         .HasColumnType("int");
 
                     b.Property<int>("ClassroomId")
                         .HasColumnType("int");
-
 
                     b.Property<string>("CourseCode")
                         .IsRequired()
@@ -76,10 +77,8 @@ namespace ap_project_final.Migrations
                     b.Property<int>("ProfessorId")
                         .HasColumnType("int");
 
-
                     b.Property<TimeSpan>("StartTime")
                         .HasColumnType("time");
-
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -90,9 +89,7 @@ namespace ap_project_final.Migrations
 
                     b.HasKey("Id");
 
-
                     b.HasIndex("ClassroomId");
-
 
                     b.HasIndex("ProfessorId");
 
@@ -202,13 +199,11 @@ namespace ap_project_final.Migrations
 
             modelBuilder.Entity("ap_project_final.Models.Course", b =>
                 {
-
                     b.HasOne("ap_project_final.Models.Classroom", "Classroom")
                         .WithMany("Courses")
                         .HasForeignKey("ClassroomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
 
                     b.HasOne("ap_project_final.Models.Professor", "Professor")
                         .WithMany("Courses")
@@ -216,9 +211,7 @@ namespace ap_project_final.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-
                     b.Navigation("Classroom");
-
 
                     b.Navigation("Professor");
                 });
@@ -241,7 +234,6 @@ namespace ap_project_final.Migrations
 
                     b.Navigation("Student");
                 });
-
 
             modelBuilder.Entity("ap_project_final.Models.Classroom", b =>
                 {

@@ -1,3 +1,4 @@
+
 ﻿@model YourNamespace.Models.StudentProfileViewModel
 
 <h2>My Profile</h2>
@@ -32,4 +33,23 @@
 </ul>
 
 <h3>Total Average Score</h3>
+
 <p>@Model.TotalAverageScore.ToString("F2")</p>
+
+@model ap_project_final.Models.Student
+@{
+    ViewBag.Title = "My Profile";
+}
+<h2>My Profile</h2>
+<ul>
+    <li>Name: @Model.FirstName</li>
+    <li>Last Name: @Model.LastName</li>
+    <li>Email: @Model.Email</li>
+    <li>Student ID: @Model.StudentId</li>
+    <li>Entry Date: @Model.EntryDate.ToString("yyyy-MM-dd")</li>
+    <li>Password: @Model.Password</li> 
+</ul>
+
+
+<p>@Model.TotalAverageScore.ToString("F2")</p>
+
