@@ -1,20 +1,25 @@
 ﻿@{
     ViewBag.Title = "Login";
 }
-
-<h2>Login To Continue</h2>
-
-<form method="post" action="/Account/Login">
+<h2>Login</h2>
+<form method="post" asp-action="Login">
     <label>Username:</label>
-    <input type="text" name="username" />
+    <input type="text" name="username" required />
     <br />
     <label>Password:</label>
-    <input type="password" name="password" />
+    <input type="password" name="password" required />
+    <br />
+    <label>Select Role:</label>
+    <select name="role" required>
+        <option value="">--Select Role--</option>
+        <option value="Admin">Admin</option>
+        <option value="Instructor">Instructor</option>
+        <option value="Student">Student</option>
+    </select>
     <br />
     <button type="submit">Login</button>
 </form>
-
-@if (ViewBag.ErrorMessage != null)
+@if (ViewBag.Error != null)
 {
-    <div style="color:red;">@ViewBag.ErrorMessage</div>
+    <p style="color:red;">@ViewBag.Error</p>
 }
