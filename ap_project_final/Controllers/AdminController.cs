@@ -38,7 +38,7 @@ namespace ap_project_final.Controllers
            
                 _context.Add(professor);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(InstructorsList));
+                return RedirectToAction("ManageUsers");
             
             return View(professor);
         }
@@ -157,15 +157,22 @@ namespace ap_project_final.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddCourse(Course course)
+        public async Task<IActionResult> AddCourse(Course course,string LastName)
         {
-            if (ModelState.IsValid)
+            var professor = await _context.Professors.FirstOrDefaultAsync(p => p.LastName==LastName);
+            if (professor == null)
             {
-                _context.Add(course);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(CoursesList));
+                ModelState.AddModelError("ProfessorId", "Professor not found.");
+                return View(course); // return view with validation error
             }
-            return View(course);
+
+            course.Professor = professor;
+
+            _context.Add(course);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("CourseList");
+            
+            
         }
 
         public async Task<IActionResult> EditCourse(int? id)

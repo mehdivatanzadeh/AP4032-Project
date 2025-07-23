@@ -5,6 +5,7 @@ using ap_project_final.Models;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using ap_project_final.Data;
+using Microsoft.EntityFrameworkCore;
 
 public class AccountController : Controller
 {
@@ -46,26 +47,24 @@ public class AccountController : Controller
         }
         else if (role == "Instructor")
         {
-            if (int.TryParse(username, out int instructorId))
-            {
-                var instructor = await _context.Professors.FindAsync(instructorId);
-                if (instructor != null && instructor.Password == password)
+           
+                var Professor = await _context.Professors.FirstOrDefaultAsync(i => i.ProfessorId ==username);
+                if (Professor != null && Professor.Password == password)
                 {
-                    await SignInUser(instructor.Id.ToString(), instructor.FirstName + " " + instructor.LastName, role);
+                    await SignInUser(Professor.Id.ToString(), Professor.FirstName + " " + Professor.LastName, role);
                     return RedirectToAction("Index", "Instructor");
                 }
-            }
+            
         }
         else if (role == "Student")
         {
-            if (int.TryParse(username, out int studentId))
-            {
-                var student = await _context.Students.FindAsync(studentId);
+            
+                var student = await _context.Students.FirstOrDefaultAsync(i => i.StudentId == username);
                 if (student != null && student.Password == password)
                 {
                     await SignInUser(student.Id.ToString(), student.FirstName + " " + student.LastName, role);
                     return RedirectToAction("Index", "Student");
-                }
+                
             }
         }
 

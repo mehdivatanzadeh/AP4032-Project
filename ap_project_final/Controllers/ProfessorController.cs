@@ -77,6 +77,31 @@ namespace ap_project_final.Controllers
             return View(model);
         }
 
+        [Authorize]
+    public async Task<IActionResult> ManageCourses()
+    {
+        // Get current instructor's user ID (assume it's stored in User claims)
+        // Adjust based on your authentication setup
+        var userName = User.FindFirstValue(ClaimTypes.Name);
+        
+        // Find the instructor record based on user ID or username
+        // Assuming your Instructor has a UserId property linking to auth user
+        var instructor = await _context.Professors
+            .FirstOrDefaultAsync(i => i.ProfessorId == userName);
+
+        if (instructor == null)
+        {
+            return Unauthorized(); // or redirect appropriately
+        }
+
+        // Get courses where ProfessorId matches this instructor
+        var courses = await _context.Courses
+            .Where(c => c.ProfessorId == instructor.Id)
+            .ToListAsync();
+
+        return View(courses);
+    }
+
         [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> Index()
         {
