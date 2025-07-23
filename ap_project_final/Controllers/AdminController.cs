@@ -35,12 +35,11 @@ namespace ap_project_final.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddInstructor(Professor professor)
         {
-            if (ModelState.IsValid)
-            {
+           
                 _context.Add(professor);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(InstructorsList));
-            }
+            
             return View(professor);
         }
 
@@ -72,9 +71,11 @@ namespace ap_project_final.Controllers
         {
             var instructor = await _context.Professors.FindAsync(id);
             if (instructor == null) return NotFound();
+
             _context.Professors.Remove(instructor);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(InstructorsList));
+
+            return Ok();
         }
 
         // --- Student Management ---
@@ -130,13 +131,16 @@ namespace ap_project_final.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        
         public async Task<IActionResult> DeleteStudent(int id)
         {
             var student = await _context.Students.FindAsync(id);
             if (student == null) return NotFound();
+
             _context.Students.Remove(student);
             await _context.SaveChangesAsync();
-            return RedirectToAction("ManageUsers");
+
+            return Ok();
         }
 
         // --- Course Management ---
