@@ -6,33 +6,51 @@
 <h2>Manage Users</h2>
 
 <h3>Students</h3>
-<ul>
+<ul id="students-list">
     @foreach (var student in Model.Students)
     {
-        <li>
+        <li id="student-@student.Id">
             @student.LastName
-            <button style="margin-left:10px;" onclick="location.href='/Admin/RemoveStudent/@student.Id'">Remove</button>
+            <button style="margin-left:10px;" onclick="removeUser('student', @student.Id, this)">Remove</button>
         </li>
     }
 </ul>
 <button style="margin-top:10px;" onclick="location.href='/Admin/AddStudent'">Add Student</button>
 
-
 <h3>Instructors</h3>
-<ul>
+<ul id="instructors-list">
     @foreach (var instructor in Model.Professors)
     {
-
-        <li>
+        <li id="instructor-@instructor.Id">
             @instructor.LastName
-            <button style="margin-left:10px;" onclick="location.href='/Admin/RemoveInstructor/@instructor.Id'">Remove</button>
+            <button style="margin-left:10px;" onclick="removeUser('instructor', @instructor.Id, this)">Remove</button>
         </li>
     }
 </ul>
 <button style="margin-top:10px;" onclick="location.href='/Admin/AddInstructor'">Add Instructor</button>
 
+<script>
+    async function removeUser(type, id, btn) {
+        const url = type === 'student' ? '/Admin/RemoveStudent' : '/Admin/RemoveInstructor';
 
-<br />
-<a class="btn btn-primary" href="/Admin/AddStudent">Add Student</a>
-<a class="btn btn-primary" href="/Admin/AddInstructor">Add Instructor</a>
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'RequestVerificationToken': getToken() },
+            body: JSON.stringify({ id: id })
+        });
 
+        const result = await response.json();
+
+        if (result.success) {
+            // Remove the list item
+            const listItem = btn.closest('li');
+            listItem.remove();
+        } else {
+            alert('Failed to remove: ' + result.message);
+        }
+
+        function getToken() {
+            return document.querySelector('input[name="__RequestVerificationToken"]').value;
+        }
+    }
+</script>

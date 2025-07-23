@@ -93,12 +93,15 @@ namespace ap_project_final.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddStudent(Student student)
         {
-            if (ModelState.IsValid)
-            {
+            
+                TempData["Message"] = "Student added successfully!";
                 _context.Add(student);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(StudentsList));
-            }
+                
+                return RedirectToAction("ManageUsers");
+                
+                
+            
             return View(student);
         }
 
@@ -133,7 +136,7 @@ namespace ap_project_final.Controllers
             if (student == null) return NotFound();
             _context.Students.Remove(student);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(StudentsList));
+            return RedirectToAction("ManageUsers");
         }
 
         // --- Course Management ---

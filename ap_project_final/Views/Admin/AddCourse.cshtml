@@ -1,0 +1,72 @@
+﻿@model ap_project_final.Models.Course  
+
+<h3>Add Course</h3>
+
+<form method="post" asp-action="AddCourse" asp-controller="Admin" style="max-width:400px; margin:auto;">
+    @Html.AntiForgeryToken()
+
+    <!-- CourseCode -->
+    <div style="margin-bottom:10px;">
+        <label asp-for="CourseCode">Course Code:</label><br />
+        <input asp-for="CourseCode" style="width:100%;" required />
+        <span asp-validation-for="CourseCode" style="color:red"></span>
+    </div>
+
+    <!-- Title -->
+    <div style="margin-bottom:10px;">
+        <label asp-for="Title">Title:</label><br />
+        <input asp-for="Title" style="width:100%;" required />
+        <span asp-validation-for="Title" style="color:red"></span>
+    </div>
+
+    <!-- Units -->
+    <div style="margin-bottom:10px;">
+        <label asp-for="Units">Units:</label><br />
+        <input asp-for="Units" type="number" min="1" style="width:100%;" required />
+        <span asp-validation-for="Units" style="color:red"></span>
+    </div>
+
+    <!-- Description -->
+    <div style="margin-bottom:10px;">
+        <label asp-for="Description">Description:</label><br />
+        <textarea asp-for="Description" style="width:100%; height:100px;"></textarea>
+        <span asp-validation-for="Description" style="color:red"></span>
+    </div>
+
+    <!-- ExamDate -->
+    <div style="margin-bottom:10px;">
+        <label asp-for="ExamDate">Exam Date:</label><br />
+        <input asp-for="ExamDate" type="date" style="width:100%;" required />
+        <span asp-validation-for="ExamDate" style="color:red"></span>
+    </div>
+
+    <!-- ClassDay -->
+    <div style="margin-bottom:10px;">
+        <label asp-for="ClassDay">Class Day:</label><br />
+        <select asp-for="ClassDay" style="width:100%;">
+            <option value="">Select Day</option>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+            <option value="Sunday">Sunday</option>
+        </select>
+        <span asp-validation-for="ClassDay" style="color:red"></span>
+    </div>
+
+    <!-- StartTime -->
+    <div style="margin-bottom:10px;">
+        <label asp-for="StartTime">Start Time:</label><br />
+        <input asp-for="StartTime" type="time" style="width:100%;" required />
+        <span asp-validation-for="StartTime" style="color:red"></span>
+    </div>
+
+
+    <button type="submit" style="padding:8px 16px;">Add Course</button>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

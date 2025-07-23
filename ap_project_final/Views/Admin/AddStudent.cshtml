@@ -1,31 +1,50 @@
 ﻿@model ap_project_final.Models.Student
-@{
-    ViewBag.Title = "Add Student";
-}
-<h2>Add Student</h2>
-<form method="post" asp-action="AddStudent" asp-controller="StudentController">
-    <div>
-        <label>Student ID:</label>
-        <input asp-for="StudentId" required />
+<h3>Add Student</h3>
+
+<form method="post" asp-action="AddStudent" asp-controller="Admin" style="max-width:400px; margin:auto;">
+    @Html.AntiForgeryToken()
+    <!-- Student ID -->
+    <div style="margin-bottom:10px;">
+        <label asp-for="StudentId">Student ID:</label><br />
+        <input asp-for="StudentId" style="width:100%;" required />
     </div>
-    <div>
-        <label>First Name:</label>
-        <input asp-for="FirstName" required />
+
+    <!-- First Name -->
+    <div style="margin-bottom:10px;">
+        <label asp-for="FirstName">First Name:</label><br />
+        <input asp-for="FirstName" style="width:100%;" required />
     </div>
-    <div>
-        <label>Last Name:</label>
-        <input asp-for="LastName" required />
+
+    <!-- Last Name -->
+    <div style="margin-bottom:10px;">
+        <label asp-for="LastName">Last Name:</label><br />
+        <input asp-for="LastName" style="width:100%;" required />
     </div>
-    <div>
-        <label>Email:</label>
-        <input asp-for="Email" type="email" required />
+
+    <!-- Email -->
+    <div style="margin-bottom:10px;">
+        <label asp-for="Email">Email:</label><br />
+        <input asp-for="Email" type="email" style="width:100%;" required />
     </div>
-    <div>
-        <label>Password:</label>
-        <input asp-for="Password" type="password" required />
+
+    <!-- Password -->
+    <div style="margin-bottom:10px;">
+        <label asp-for="Password">Password:</label><br />
+        <input asp-for="Password" type="password" style="width:100%;" required />
     </div>
-    <div>
-        <label>Entry Date:</label>
-        <input asp-for="EntryDate" type="date" required />
-    </div
+
+    <!-- Entry Date -->
+    <div style="margin-bottom:10px;">
+        <label asp-for="EntryDate">Entry Date:</label><br />
+        <input asp-for="EntryDate" type="date" style="width:100%;" required />
+    </div>
+
+    <button type="submit" style="padding:8px 16px;">Add Student</button>
 </form>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Message"]
+    </div>
+}
