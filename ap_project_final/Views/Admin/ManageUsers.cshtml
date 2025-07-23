@@ -6,51 +6,31 @@
 <h2>Manage Users</h2>
 
 <h3>Students</h3>
-<ul id="students-list">
+<ul>
     @foreach (var student in Model.Students)
     {
-        <li id="student-@student.Id">
+        <li>
             @student.LastName
-            <button style="margin-left:10px;" onclick="removeUser('student', @student.Id, this)">Remove</button>
+            <button style="margin-left:10px;" onclick="location.href='/Admin/RemoveStudent/@student.Id'">Remove</button>
         </li>
     }
 </ul>
 <button style="margin-top:10px;" onclick="location.href='/Admin/AddStudent'">Add Student</button>
 
+
 <h3>Instructors</h3>
-<ul id="instructors-list">
+<ul>
     @foreach (var instructor in Model.Professors)
     {
-        <li id="instructor-@instructor.Id">
+
+        <li>
             @instructor.LastName
-            <button style="margin-left:10px;" onclick="removeUser('instructor', @instructor.Id, this)">Remove</button>
+            <button style="margin-left:10px;" onclick="location.href='/Admin/RemoveInstructor/@instructor.Id'">Remove</button>
         </li>
     }
 </ul>
 <button style="margin-top:10px;" onclick="location.href='/Admin/AddInstructor'">Add Instructor</button>
 
-<script>
-    async function removeUser(type, id, btn) {
-        const url = type === 'student' ? '/Admin/RemoveStudent' : '/Admin/RemoveInstructor';
 
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'RequestVerificationToken': getToken() },
-            body: JSON.stringify({ id: id })
-        });
 
-        const result = await response.json();
 
-        if (result.success) {
-            // Remove the list item
-            const listItem = btn.closest('li');
-            listItem.remove();
-        } else {
-            alert('Failed to remove: ' + result.message);
-        }
-
-        function getToken() {
-            return document.querySelector('input[name="__RequestVerificationToken"]').value;
-        }
-    }
-</script>
