@@ -47,5 +47,31 @@ namespace ap_project_final.Controllers
                 return RedirectToAction("Login", "Account");
             return View(student);
         }
+
+        public async Task<IActionResult> Profile()
+        {
+            // Here, get current logged-in student's ID
+            // Assuming you use session, claim, or some auth method
+            // For example, if using Identity:
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            System.Diagnostics.Debug.WriteLine($"Claim userId: {userId}");
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return RedirectToAction("Login", "Account"); // Or show error
+            }
+
+            // Find student by their id (StudentId or User ID, based on your setup)
+            var student = await _context.Students
+                //.Where(s => s.UserId == userId) // if you have UserId foreign key
+                .FirstOrDefaultAsync(s => s.StudentId.ToString() == userId);
+
+            if (student == null)
+            {
+                return NotFound("Student not found");
+            }
+
+            return View(student);
+        }
     }
 }

@@ -67,15 +67,16 @@ namespace ap_project_final.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteInstructor(int id)
+        public IActionResult DeleteInstructor(int id)
         {
-            var instructor = await _context.Professors.FindAsync(id);
-            if (instructor == null) return NotFound();
-
-            _context.Professors.Remove(instructor);
-            await _context.SaveChangesAsync();
-
-            return Ok();
+            var instructor = _context.Professors.Find(id);
+            if (instructor != null)
+            {
+                _context.Professors.Remove(instructor);
+                _context.SaveChanges(); // Save changes to delete from DB
+                return Ok(new { success = true });
+            }
+            return NotFound();
         }
 
         // --- Student Management ---
@@ -129,18 +130,19 @@ namespace ap_project_final.Controllers
         }
 
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        
-        public async Task<IActionResult> DeleteStudent(int id)
+
+
+        [HttpPost("{id}")]
+        public IActionResult DeleteStudent(int id)
         {
-            var student = await _context.Students.FindAsync(id);
-            if (student == null) return NotFound();
-
+            var student = _context.Students.FirstOrDefault(s => s.Id == id);
+            if (student == null)
+                return Json(new { success = false, message = "Student not found" });
             _context.Students.Remove(student);
-            await _context.SaveChangesAsync();
-
-            return Ok();
+            _context.SaveChanges(); // Save changes to delete from DB
+            return Ok(new { success = true });
+            
+            
         }
 
         // --- Course Management ---
