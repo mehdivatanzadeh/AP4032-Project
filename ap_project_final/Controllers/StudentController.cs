@@ -47,31 +47,45 @@ namespace ap_project_final.Controllers
                 return RedirectToAction("Login", "Account");
             return View(student);
         }
-
+        [Authorize(Roles = "Student")]
         public async Task<IActionResult> Profile()
         {
-            // Here, get current logged-in student's ID
-            // Assuming you use session, claim, or some auth method
-            // For example, if using Identity:
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            System.Diagnostics.Debug.WriteLine($"Claim userId: {userId}");
+            // Get the ID from claim
+            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            if (string.IsNullOrEmpty(userId))
+            if (string.IsNullOrEmpty(userIdStr))
+                return RedirectToAction("Login", "Account");
+
+            // Convert to int, as primary key is likely int
+            if (int.TryParse(userIdStr, out int userId))
             {
-                return RedirectToAction("Login", "Account"); // Or show error
+                var student = await _context.Students.FirstOrDefaultAsync(s => s.Id == userId);
+                if (student == null)
+                    return NotFound("Student not found");
+
+                return View(student);
             }
 
-            // Find student by their id (StudentId or User ID, based on your setup)
-            var student = await _context.Students
-                //.Where(s => s.UserId == userId) // if you have UserId foreign key
-                .FirstOrDefaultAsync(s => s.StudentId.ToString() == userId);
+            // If not int, handle accordingly
+            return NotFound("Invalid user ID");
+        }
 
-            if (student == null)
-            {
-                return NotFound("Student not found");
-            }
+        [Authorize]
+        public async Task<IActionResult> ManageCourses()
+        {
+            var StudentIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            return View(student);
+            
+
+            var enrollments = await _context.Enrollments
+                .Where(c => c.Student.StudentId == StudentIdStr)
+                .ToListAsync();
+            var courses = enrollments.Select(e => e.Course).Distinct().ToList();
+
+            return View(courses);
+            
+
+            
         }
     }
 }

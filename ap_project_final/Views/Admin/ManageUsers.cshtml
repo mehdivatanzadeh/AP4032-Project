@@ -11,7 +11,7 @@
     {
         <li>
             @student.LastName
-            <button style="margin-left:10px;" onclick="deleteUser('student', @student.Id, this)">Remove</button>
+            
         </li>
     }
 </ul>
@@ -23,7 +23,7 @@
     {
         <li>
             @instructor.LastName
-            <button style="margin-left:10px;" onclick="deleteUser('instructor', @instructor.Id, this)">Remove</button>
+            
         </li>
     }
 </ul>
@@ -31,30 +31,19 @@
 
 <button onclick="location.href='/Admin/Index'" style="margin-top:10px;">Back</button>
 
-@section Scripts {
-    <script>
-        function deleteUser(type, id, button) {
-            let url = '';
+<h3>Remove Student</h3>
+<form method="post" action="/Admin/RemoveStudent">
+    <label for="studentId">Student ID:</label>
+    <input type="text" id="studentId" name="studentId" required />
+    <button type="submit">Remove Student</button>
+</form>
 
-            if (type === 'student') {
-                url = '/Admin/DeleteStudent/' + id;
-            } else if (type === 'instructor') {
-                url = '/Admin/DeleteInstructor/' + id;
-            }
+<hr />
 
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => {
-                
-                    // Remove the list item from the DOM
-                    const listItem = button.closest('li');
-                    listItem.remove();
-                
-            });
-        }
-    </script>
-}
+<h3>Remove Instructor</h3>
+<form method="post" action="/Admin/RemoveInstructor">
+    <label for="instructorId">Instructor ID:</label>
+    <input type="text" id="instructorId" name="instructorId" required />
+    <button type="submit">Remove Instructor</button>
+</form>
+

@@ -66,21 +66,31 @@ namespace ap_project_final.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeleteInstructor(int id)
+        public async Task<IActionResult> RemoveInstructor(string instructorId)
         {
-            var instructor = _context.Professors.Find(id);
-            if (instructor != null)
+            if (int.TryParse(instructorId, out int id))
             {
-                _context.Professors.Remove(instructor);
-                _context.SaveChanges(); // Save changes to delete from DB
-                return Ok(new { success = true });
+                var instructor = await _context.Professors.FirstOrDefaultAsync(i => i.ProfessorId == instructorId);
+                if (instructor != null)
+                {
+                    _context.Professors.Remove(instructor);
+                    await _context.SaveChangesAsync();
+                    TempData["Message"] = "Instructor removed successfully.";
+                }
+                else
+                {
+                    TempData["Error"] = "Instructor not found.";
+                }
             }
-            return NotFound();
+            else
+            {
+                TempData["Error"] = "Invalid Instructor ID.";
+            }
+            return RedirectToAction("ManageUsers"); // Adjust based on your view
         }
 
         // --- Student Management ---
-
+        
         public async Task<IActionResult> StudentsList()
         {
             return View(await _context.Students.ToListAsync());
@@ -132,17 +142,24 @@ namespace ap_project_final.Controllers
 
 
 
-        [HttpPost("{id}")]
-        public IActionResult DeleteStudent(int id)
+        [HttpPost]
+        public async Task<IActionResult> RemoveStudent(string studentId)
         {
-            var student = _context.Students.FirstOrDefault(s => s.Id == id);
-            if (student == null)
-                return Json(new { success = false, message = "Student not found" });
-            _context.Students.Remove(student);
-            _context.SaveChanges(); // Save changes to delete from DB
-            return Ok(new { success = true });
+            
+                var student = await _context.Students.FirstOrDefaultAsync(s => s.StudentId==studentId);
+                if (student != null)
+                {
+                    _context.Students.Remove(student);
+                    await _context.SaveChangesAsync();
+                    TempData["Message"] = "Student removed successfully.";
+                }
+                else
+                {
+                    TempData["Error"] = "Student not found.";
+                }
             
             
+            return RedirectToAction("ManageUsers"); // Adjust based on your view
         }
 
         // --- Course Management ---
@@ -159,22 +176,15 @@ namespace ap_project_final.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddCourse(Course course,string LastName)
+        
+        public async Task<IActionResult> AddCourse(Course course)
         {
-            var professor = await _context.Professors.FirstOrDefaultAsync(p => p.LastName==LastName);
-            if (professor == null)
-            {
-                ModelState.AddModelError("ProfessorId", "Professor not found.");
-                return View(course); // return view with validation error
-            }
-
-            course.Professor = professor;
-
-            _context.Add(course);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("CourseList");
             
-            
+
+            _context.Courses.Add(course);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("CourseList"); // or your redirect
         }
 
         public async Task<IActionResult> EditCourse(int? id)

@@ -51,56 +51,59 @@ namespace ap_project_final.Controllers
             TempData["Message"] = "Student removed from class successfully.";
             return RedirectToAction("CourseDetails", new { courseId = courseId });
         }
-        public async Task<IActionResult> ManageParticipants(int classroomId)
+        public async Task<IActionResult> ManageParticipants(int courseId)
         {
-            var classroom = await _context.Classrooms.FindAsync(classroomId);
-            if (classroom == null)
-                return NotFound();
-
-            var students = await _context.Enrollments
-                .Where(e => e.Course.Id == classroomId)
-                .Include(e => e.Student)
-                .Select(e => e.Student)
-                .ToListAsync();
-
-            var instructors = await _context.Professors
-                .Where(i => i.Courses.Any(c => c.Id == classroomId))
-                .ToListAsync();
-
-            var model = new ParticipantListViewModel
+            // Get current instructor ID from claims
+            var instructorIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(instructorIdStr) || !int.TryParse(instructorIdStr, out int instructorId))
             {
-                ClassroomName = classroom.Building,
-                ClassroomId = classroom.Id,
-                Students = students,
-                Instructors = instructors
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Verify that the instructor manages this course
+            var course = await _context.Courses
+                .FirstOrDefaultAsync(c => c.Id == courseId && c.ProfessorId == instructorId);
+            if (course == null)
+            {
+                return NotFound("Course not found or you do not manage this course");
+            }
+
+            // Fetch enrollments for the course, including student info
+            var enrollments = await _context.Enrollments
+                .Include(e => e.Student) // include student info
+                .Where(e => e.CourseId == courseId)
+                .ToListAsync();
+
+            var viewModel = new ParticipantListViewModel
+            {
+                
+                Enrollments = enrollments
             };
-            return View(model);
+
+            return View(viewModel);
         }
 
         [Authorize]
-    public async Task<IActionResult> ManageCourses()
-    {
-        // Get current instructor's user ID (assume it's stored in User claims)
-        // Adjust based on your authentication setup
-        var userName = User.FindFirstValue(ClaimTypes.Name);
-        
-        // Find the instructor record based on user ID or username
-        // Assuming your Instructor has a UserId property linking to auth user
-        var instructor = await _context.Professors
-            .FirstOrDefaultAsync(i => i.ProfessorId == userName);
-
-        if (instructor == null)
+        public async Task<IActionResult> ManageCourses()
         {
-            return Unauthorized(); // or redirect appropriately
+            var instructorIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(instructorIdStr))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            if (int.TryParse(instructorIdStr, out int instructorId))
+            {
+                var courses = await _context.Courses
+                    .Where(c => c.ProfessorId == instructorId)
+                    .ToListAsync();
+
+                return View(courses);
+            }
+
+            return RedirectToAction("Login", "Account");
         }
-
-        // Get courses where ProfessorId matches this instructor
-        var courses = await _context.Courses
-            .Where(c => c.ProfessorId == instructor.Id)
-            .ToListAsync();
-
-        return View(courses);
-    }
 
         [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> Index()

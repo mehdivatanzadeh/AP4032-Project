@@ -27,7 +27,7 @@ namespace ap_project_final.Models
         public int ProfessorId { get; set; } 
 
         [ForeignKey("ProfessorId")]
-        public Professor Professor { get; set; } 
+        public Professor? Professor { get; set; } 
 
         public ICollection<Enrollment> Enrollments { get; set; }
     }
