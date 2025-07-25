@@ -1,0 +1,33 @@
+﻿@model IEnumerable<ap_project_final.Models.Classroom>
+
+<h3>Manage Classrooms</h3>
+
+<table class="table table-striped" style="max-width:600px; margin:auto;">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Building</th>
+            <th>Room Number</th>
+            <th>Capacity</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var c in Model)
+        {
+            <tr>
+                <td>@c.Id</td>
+                <td>@c.Building</td>
+                <td>@c.RoomNumber</td>
+                <td>@c.Capacity</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div style="text-align:center; margin-top:20px;">
+    <button onclick="location.href='/Admin/AddClassroom'" class="btn btn-primary">
+        Add Classroom
+    </button>
+</div>
+
+<button onclick="location.href='/Admin/Index'" style="margin-top:10px;">Back</button>

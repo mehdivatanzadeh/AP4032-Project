@@ -2,7 +2,7 @@
 
 <h3>Add Course</h3>
 
-<form method="post" asp-action="AddCourse" asp-controller="Admin" style="max-width:400px; margin:auto;">
+<form method="post" asp-action="AddCourse" asp-controller="Admin" style="max-width:500px; margin:auto;">
     @Html.AntiForgeryToken()
 
     <!-- Course Code -->
@@ -43,7 +43,7 @@
     <!-- Class Day -->
     <div style="margin-bottom:10px;">
         <label asp-for="ClassDay">Class Day:</label>
-        <select asp-for="ClassDay" class="form-control">
+        <select asp-for="ClassDay" class="form-control" required>
             <option value="">Select Day</option>
             <option value="Monday">Monday</option>
             <option value="Tuesday">Tuesday</option>
@@ -61,6 +61,24 @@
         <label asp-for="StartTime">Start Time:</label>
         <input asp-for="StartTime" type="time" class="form-control" required />
         <span asp-validation-for="StartTime" class="text-danger"></span>
+    </div>
+
+    <!-- Professor dropdown -->
+    <div style="margin-bottom:10px;">
+        <label for="ProfessorId">Select Professor:</label>
+        <select asp-for="ProfessorId" class="form-control" asp-items="ViewBag.Professors" required>
+            <option value="">-- Select Professor --</option>
+        </select>
+        <span asp-validation-for="ProfessorId" class="text-danger"></span>
+    </div>
+
+    <!-- Classroom dropdown -->
+    <div style="margin-bottom:10px;">
+        <label for="ClassroomId">Select Classroom:</label>
+        <select asp-for="ClassroomId" class="form-control" asp-items="ViewBag.Classrooms" required>
+            <option value="">-- Select Classroom --</option>
+        </select>
+        <span asp-validation-for="ClassroomId" class="text-danger"></span>
     </div>
 
     <button type="submit" class="btn btn-primary">Add Course</button>

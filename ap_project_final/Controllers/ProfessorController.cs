@@ -51,7 +51,7 @@ namespace ap_project_final.Controllers
             TempData["Message"] = "Student removed from class successfully.";
             return RedirectToAction("CourseDetails", new { courseId = courseId });
         }
-        public async Task<IActionResult> ManageParticipants(int courseId)
+        /*public async Task<IActionResult> ManageParticipants(int courseId)
         {
             // Get current instructor ID from claims
             var instructorIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -81,7 +81,7 @@ namespace ap_project_final.Controllers
             };
 
             return View(viewModel);
-        }
+        }*/
 
         [Authorize]
         public async Task<IActionResult> ManageCourses()

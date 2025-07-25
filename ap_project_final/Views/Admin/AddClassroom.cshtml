@@ -1,1 +1,38 @@
-﻿
+﻿@model ap_project_final.Models.Classroom
+
+<h3>Add Classroom</h3>
+
+<form method="post" asp-action="AddClassroom" asp-controller="Admin" style="max-width:400px; margin:auto;">
+    @Html.AntiForgeryToken()
+
+    <!-- Building -->
+    <div style="margin-bottom:10px;">
+        <label asp-for="Building">Building:</label>
+        <input asp-for="Building" class="form-control" required />
+        <span asp-validation-for="Building" class="text-danger"></span>
+    </div>
+
+    <!-- Room Number -->
+    <div style="margin-bottom:10px;">
+        <label asp-for="RoomNumber">Room Number:</label>
+        <input asp-for="RoomNumber" class="form-control" required />
+        <span asp-validation-for="RoomNumber" class="text-danger"></span>
+    </div>
+
+    <!-- Capacity -->
+    <div style="margin-bottom:10px;">
+        <label asp-for="Capacity">Capacity:</label>
+        <input asp-for="Capacity" type="number" min="1" class="form-control" required />
+        <span asp-validation-for="Capacity" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Add Classroom</button>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+<button onclick="location.href='/Admin/ClassroomsList'" style="margin-top:10px;">Back</button>

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ap_project_final.Models.Enrollment>
+﻿@model IEnumerable<ap_project_final.Models.Course>
     @{
     ViewBag.Title = "My Courses";
     }
@@ -7,8 +7,8 @@
         @foreach (var course in Model)
     {
         <li>
-            <a href="/Student/CourseDetails/@course.CourseId"/a>
-            <form method="post" asp-action="RemoveCourse" asp-route-courseId="@course.CourseId" style="display:inline;">
+            <a href="/Student/CourseDetails/@course.Id"/a>
+            <form method="post" asp-action="RemoveCourse" asp-route-courseId="@course.Id" style="display:inline;">
                 <button type="submit">Remove</button>
             </form>
         </li>

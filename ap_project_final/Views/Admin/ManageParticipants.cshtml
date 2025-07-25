@@ -1,39 +1,42 @@
-﻿@model ap_project_final.Models.ParticipantListViewModel
-@{
-    ViewBag.Title = "Manage Participants";
-}
-<h2>Participants in Classroom @Model.ClassroomName</h2>
+﻿@model ap_project_final.Models.ManageParticipantsViewModel
 
-<h3>Instructors</h3>
-<ul>
-    @foreach (var instructor in Model.Instructors)
-    {
-    <li>
-        @instructor.LastName
-        <form method="post" asp-action="RemoveParticipant" asp-route-participantId="@instructor.Id" asp-route-participantType="Instructor" style="display:inline;">
-            <button type="submit">Remove</button>
-        </form>
-    </li>
-    }
-</ul>
+<h2>Manage Participants for @Model.CourseName</h2>
+
+<h3>Current Professor</h3>
+<p>@Model.CurrentProfessorName</p>
+
+<form method="post" asp-action="ChangeProfessor" asp-route-courseId="@Model.CourseId">
+    <label for="professorSelect">Change Professor:</label>
+    <select id="professorSelect" name="newProfessorId" class="form-control" style="width:200px;">
+        @foreach (var prof in Model.AllProfessors)
+        {
+            <option value="@prof.Id" >
+                @prof.LastName
+            </option>
+        }
+    </select>
+    <button type="submit" class="btn btn-primary" style="margin-top:10px;">Change</button>
+</form>
 
 <h3>Students</h3>
 <ul>
     @foreach (var student in Model.Students)
     {
-    <li>
-        @student.LastName
-        <form method="post" asp-action="RemoveParticipant" asp-route-participantId="@student.Id" asp-route-participantType="Student" style="display:inline;">
-            <button type="submit">Remove</button>
-        </form>
-    </li>
+        <li>@student.LastName</li>
     }
 </ul>
 
-<a class="btn btn-primary" href="/Admin/AssignStudent/@Model.ClassroomId">Add Student</a>
-@if (!Model.Instructors.Any())
-{
-<a class="btn btn-primary" href="/Admin/AssignInstructor/@Model.ClassroomId">Add Instructor</a>
-}
+<h4>Add Student by ID</h4>
+<form method="post" asp-action="AddStudent" asp-route-courseId="@Model.CourseId">
+    <input type="text" name="studentId" placeholder="Enter Student ID" class="form-control" style="width:200px;" />
+    <button type="submit" class="btn btn-success" style="margin-top:10px;">Add Student</button>
+</form>
 
-<a href="/Admin/CoursesList">Back</a>
+<h4>Remove Student by ID</h4>
+<form method="post" asp-action="RemoveStudent" asp-route-courseId="@Model.CourseId">
+    <input type="text" name="studentId" placeholder="Enter Student ID" class="form-control" style="width:200px;" />
+    <button type="submit" class="btn btn-danger" style="margin-top:10px;">Remove Student</button>
+</form>
+
+<br />
+<a href="/Admin/CoursesList" class="btn btn-secondary">Back to Courses</a>

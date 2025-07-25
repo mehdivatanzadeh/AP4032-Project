@@ -2,6 +2,7 @@
 using ap_project_final.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
@@ -171,20 +172,44 @@ namespace ap_project_final.Controllers
 
         public IActionResult AddCourse()
         {
-            return View();
+            // Populate Professors
+            ViewBag.Professors = _context.Professors
+                .Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = p.LastName // or p.FirstName + " " + p.LastName
+                }).ToList();
+
+            // Populate Classrooms
+            ViewBag.Classrooms = _context.Classrooms
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = $"{c.Building} - Room {c.RoomNumber} (Capacity: {c.Capacity})"
+                }).ToList();
+
+            return View(new Course());
         }
 
+        // POST: Add new course
         [HttpPost]
         [ValidateAntiForgeryToken]
-        
         public async Task<IActionResult> AddCourse(Course course)
         {
+            // Server-side validation
+            
+                // Repopulate dropdowns if validation fails
+               
+
+               
             
 
+            // Save course with selected professor and classroom
             _context.Courses.Add(course);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("CourseList"); // or your redirect
+            // Redirect to list or confirmation page
+            return RedirectToAction("CoursesList");
         }
 
         public async Task<IActionResult> EditCourse(int? id)
@@ -214,10 +239,12 @@ namespace ap_project_final.Controllers
         public async Task<IActionResult> DeleteCourse(int id)
         {
             var course = await _context.Courses.FindAsync(id);
-            if (course == null) return NotFound();
-            _context.Courses.Remove(course);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(CoursesList));
+            if (course != null)
+            {
+                _context.Courses.Remove(course);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction("CoursesList");
         }
 
         // --- Complex Logic ---
@@ -265,34 +292,121 @@ namespace ap_project_final.Controllers
             };
             return View(model);
         }
-        public async Task<IActionResult> ManageParticipants(int classroomId)
+        public IActionResult ManageParticipants(int courseId)
         {
-            // Fetch classroom info
-            var classroom = await _context.Classrooms.FindAsync(classroomId);
-            if (classroom == null)
+            var course = _context.Courses
+                .Include(c => c.Professor)    // Assumed navigation property
+                .Include(c => c.Enrollments).ThenInclude(e => e.Student) // List of enrolled students
+                .FirstOrDefault(c => c.Id == courseId);
+
+            if (course == null)
                 return NotFound();
 
-            // Fetch students enrolled in this classroom
-            var students = await _context.Enrollments
-                .Where(e => e.Course.Id == classroomId)
-                .Include(e => e.Student)
-                .Select(e => e.Student)
-                .ToListAsync();
-
-            // If instructors are involved, fetch them similarly
-            var instructors = await _context.Professors
-                .Where(i => i.Courses.Any(c => c.Id == classroomId))
-                .ToListAsync();
-
-            var model = new ParticipantListViewModel
+            var viewModel = new ManageParticipantsViewModel
             {
-                ClassroomName = classroom.Building,
-                ClassroomId = classroom.Id,
-                Students = students,
-                Instructors = instructors
+                CourseId = course.Id,
+                CourseName = course.CourseCode,
+                CurrentProfessorId = course.Professor?.Id ?? 0,
+                CurrentProfessorName = course.Professor?.LastName ?? "None",
+                AllProfessors = _context.Professors.ToList(),
+                Students = course.Enrollments.Select(e => e.Student).ToList()
             };
-            return View(model);
+
+            return View(viewModel);
         }
+
+        // Change professor
+        [HttpPost]
+        public IActionResult ChangeProfessor(int courseId, int newProfessorId)
+        {
+            var course = _context.Courses.Include(c => c.Professor).FirstOrDefault(c => c.Id == courseId);
+            if (course == null)
+                return NotFound();
+
+            var professor = _context.Professors.Find(newProfessorId);
+            if (professor == null)
+                return NotFound();
+
+            course.Professor = professor;
+            _context.SaveChanges();
+
+            return RedirectToAction("ManageParticipants", new { courseId });
+        }
+
+        // Add student by ID
+        [HttpPost]
+        public IActionResult AddStudentToCourse(int courseId, string studentId)
+        {
+            if (string.IsNullOrEmpty(studentId))
+                return RedirectToAction("ManageParticipants", new { courseId });
+
+            var student = _context.Students.FirstOrDefault(s => s.StudentId == studentId);
+            if (student == null)
+                return RedirectToAction("ManageParticipants", new { courseId });
+
+            if (!_context.Enrollments.Any(e => e.CourseId == courseId && e.Student.StudentId == studentId))
+            {
+                var enrollment = new Enrollment { CourseId = courseId, Student = student };
+                _context.Enrollments.Add(enrollment);
+                _context.SaveChanges();
+            }
+
+            return RedirectToAction("ManageParticipants", new { courseId });
+        }
+
+        // Remove student by ID
+        [HttpPost]
+        public IActionResult RemoveStudentFromCourse(int courseId, string studentId)
+        {
+            var enrollment = _context.Enrollments.FirstOrDefault(e => e.CourseId == courseId && e.Student.StudentId == studentId);
+            if (enrollment != null)
+            {
+                _context.Enrollments.Remove(enrollment);
+                _context.SaveChanges();
+            }
+            return RedirectToAction("ManageParticipants", new { courseId });
+        }
+        [HttpPost]
+        public IActionResult UpdateInstructor(int courseId, int InstructorId)
+        {
+            var course = _context.Courses.FirstOrDefault(c => c.Id == courseId);
+                
+            if (course == null)
+                return NotFound();
+
+            var instructor = _context.Professors.Find(InstructorId);
+            if (instructor == null)
+                return NotFound();
+
+            // Update instructor
+            course.Professor = instructor;
+            _context.SaveChanges();
+
+            return RedirectToAction("ManageParticipants", new { courseId = courseId });
+        }
+        public IActionResult AddClassroom()
+        {
+            return View();
+        }
+
+        // POST: Handle form submission to add classroom
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddClassroom(Classroom classroom)
+        {
+
+            _context.Classrooms.Add(classroom);
+            await _context.SaveChangesAsync();
+
+            // Redirect to list of classrooms or other page
+            return RedirectToAction("ClassroomsList");
+        }
+        public IActionResult ClassroomsList()
+        {
+            var classrooms = _context.Classrooms.ToList();
+            return View(classrooms);
+        }
+
         [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
