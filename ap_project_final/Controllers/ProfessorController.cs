@@ -144,6 +144,50 @@ namespace ap_project_final.Controllers
             // Redirect back to the same page, or adjust as needed
             return RedirectToAction("ManageParticipants", new { id = enrollment.CourseId });
         }
+        // GET: برای نمایش صندوق پیام‌ها
+        [HttpPost]
+        public async Task<IActionResult> Inbox()
+        {
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            int professorId = int.Parse(userIdStr);
+
+            var messages = await _context.Messages
+                .Where(m => m.ReceiverProfessorId == professorId)
+                .Include(m => m.SenderStudent)
+                .OrderByDescending(m => m.SentAt)
+                .ToListAsync();
+            return View(messages);
+        }
+        // GET: برای نمایش لیست اعتراضات
+        public async Task<IActionResult> Appeals()
+        {
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            int professorId = int.Parse(userIdStr);
+
+            var appeals = await _context.GradeAppeals
+                .Where(a => a.Enrollment.Course.ProfessorId == professorId && a.Status == AppealStatus.Pending)
+                .Include(a => a.Enrollment.Student)
+                .Include(a => a.Enrollment.Course)
+                .ToListAsync();
+            return View(appeals);
+        }
+
+        // POST: برای پاسخ به اعتراض
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RespondToAppeal(int appealId, string professorResponse)
+        {
+            var appeal = await _context.GradeAppeals.FindAsync(appealId);
+            if (appeal == null) return NotFound();
+
+            appeal.ProfessorResponse = professorResponse;
+            appeal.Status = AppealStatus.Reviewed;
+            _context.Update(appeal);
+            await _context.SaveChangesAsync();
+
+            TempData["Message"] = "Response submitted.";
+            return RedirectToAction(nameof(Appeals));
+        }
 
     }
 }

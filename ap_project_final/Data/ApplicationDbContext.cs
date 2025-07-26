@@ -15,5 +15,8 @@ namespace ap_project_final.Data
         public DbSet<Course> Courses { get; set; }
         public DbSet<Classroom> Classrooms { get; set; }
         public DbSet<Enrollment> Enrollments { get; set; }
+        public DbSet<Message> Messages { get; set; }
+        public DbSet<GradeAppeal> GradeAppeals { get; set; }
+
     }
 }

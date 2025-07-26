@@ -1,0 +1,35 @@
+﻿@model IEnumerable<ap_project_final.Models.Message>
+
+@{
+    ViewData["Title"] = "Inbox";
+}
+
+<h1>Inbox</h1>
+<hr />
+
+@if (Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>From</th>
+                <th>Message</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var message in Model)
+            {
+                <tr>
+                    <td>@(message.SenderStudent?.FirstName) @(message.SenderStudent?.LastName)</td>
+                    <td>@message.Content</td>
+                    <td>@message.SentAt.ToString("g")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>You have no new messages.</p>
+}

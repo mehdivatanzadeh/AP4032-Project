@@ -70,29 +70,25 @@ namespace ap_project_final.Controllers
             return NotFound("Invalid user ID");
         }
 
-        [Authorize]
         public async Task<IActionResult> ManageCourses()
         {
-            var StudentIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (int.TryParse(StudentIdStr, out int userId))
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdStr))
             {
-                var student = _context.Students.FirstOrDefault(s => s.Id == userId);
-                var courses = _context.Enrollments
-    .Where(c => c.Student == student)
-    .Include(e => e.Course)
-    .Select(e => e.Course)
-    .ToList();
-
-
-                return View(courses);
-
+                return RedirectToAction("Login", "Account");
             }
-            return NotFound();
+            int loggedInStudentId = int.Parse(userIdStr);
 
+            // به جای لیست دروس، لیست ثبت‌نامی‌ها را می‌خوانیم که شامل تمام اطلاعات است
+            var enrollments = await _context.Enrollments
+                .Where(e => e.StudentId == loggedInStudentId)
+                .Include(e => e.Course)
+                .ThenInclude(c => c.Professor)
+                .ToListAsync();
 
-
+            return View(enrollments);
         }
+
         public async Task<IActionResult> CourseDetails(int id) // id is course ID
         {
             // Get student's user ID from claims
@@ -140,6 +136,58 @@ namespace ap_project_final.Controllers
             };
 
             return View(viewModel);
+        }
+        // GET: برای نمایش فرم ارسال پیام
+        public async Task<IActionResult> ComposeMessage(int professorId)
+        {
+            var professor = await _context.Professors.FindAsync(professorId);
+            if (professor == null) return NotFound();
+            ViewBag.ReceiverProfessor = professor;
+            return View();
+        }
+
+        // POST: برای ارسال پیام
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ComposeMessage(int receiverProfessorId, string content)
+        {
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            int senderStudentId = int.Parse(userIdStr);
+
+            var message = new Message
+            {
+                Content = content,
+                SenderStudentId = senderStudentId,
+                ReceiverProfessorId = receiverProfessorId
+            };
+            _context.Messages.Add(message);
+            await _context.SaveChangesAsync();
+            TempData["Message"] = "Message sent successfully!";
+            return RedirectToAction("ManageCourses"); // بازگشت به لیست دروس
+        }
+        // GET: برای نمایش فرم اعتراض
+        public async Task<IActionResult> SubmitAppeal(int enrollmentId)
+        {
+            var enrollment = await _context.Enrollments.Include(e => e.Course)
+                                             .FirstOrDefaultAsync(e => e.Id == enrollmentId);
+            if (enrollment == null) return NotFound();
+            return View(enrollment);
+        }
+
+        // POST: برای ثبت اعتراض
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SubmitAppeal(int enrollmentId, string studentMessage)
+        {
+            var appeal = new GradeAppeal
+            {
+                EnrollmentId = enrollmentId,
+                StudentMessage = studentMessage
+            };
+            _context.GradeAppeals.Add(appeal);
+            await _context.SaveChangesAsync();
+            TempData["Message"] = "Your appeal has been submitted.";
+            return RedirectToAction("ManageCourses");
         }
     }
 }

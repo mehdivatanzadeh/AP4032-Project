@@ -1,0 +1,45 @@
+﻿@model IEnumerable<ap_project_final.Models.GradeAppeal>
+
+@{
+    ViewData["Title"] = "Grade Appeals";
+}
+
+<h1>Pending Grade Appeals</h1>
+<hr />
+
+@if (Model.Any())
+{
+    <table class="table table-bordered">
+        <thead class="thead-light">
+            <tr>
+                <th>Student</th>
+                <th>Course</th>
+                <th>Student's Message</th>
+                <th style="width: 30%;">Your Response</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var appeal in Model)
+            {
+                <tr>
+                    <td>@appeal.Enrollment.Student.FirstName @appeal.Enrollment.Student.LastName</td>
+                    <td>@appeal.Enrollment.Course.Title</td>
+                    <td>@appeal.StudentMessage</td>
+                    <td>
+                        <form asp-action="RespondToAppeal" method="post">
+                            <input type="hidden" name="appealId" value="@appeal.Id" />
+                            <div class="form-group">
+                                <textarea name="professorResponse" class="form-control" rows="2" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-sm btn-primary mt-2">Submit Response</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>There are no pending grade appeals.</p>
+}

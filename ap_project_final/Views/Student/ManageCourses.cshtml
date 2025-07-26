@@ -1,20 +1,39 @@
-﻿@model IEnumerable<ap_project_final.Models.Course>
-    @{
-    ViewBag.Title = "My Courses";
-    }
-    <h2>My Courses</h2>
-    <ul>
-        @foreach (var course in Model)
-    {
-        <li>
-            <span style="display:inline-block;">
-                @course.CourseCode
-            </span>
-            <a href="/Student/CourseDetails/@course.Id" style="margin-left:10px;">Details</a>
-            <form method="post" asp-action="DropCourse" asp-route-courseId="@course.Id" style="display:inline;">
-                <button type="submit">Remove</button>
-            </form>
-        </li>
-    }
-    </ul>
-<a href="/Student/Index">Back</a>
+﻿@model IEnumerable<ap_project_final.Models.Enrollment>
+
+@{
+    ViewData["Title"] = "Manage My Courses";
+}
+
+<h1>My Courses and Grades</h1>
+<hr />
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Course Title</th>
+            <th>Professor</th>
+            <th>Grade</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var enrollment in Model)
+        {
+            <tr>
+                <td>@enrollment.Course.Title</td>
+                <td>@enrollment.Course.Professor.FirstName @enrollment.Course.Professor.LastName</td>
+                <td>@(enrollment.Grade.HasValue ? enrollment.Grade.ToString() : "Not Graded")</td>
+                <td>
+                    @* لینک ارسال پیام به استاد همین درس *@
+                    <a href="/Student/ComposeMessage?professorId=@enrollment.Course.ProfessorId" class="btn btn-info btn-sm">Send Message</a>
+
+                    @* اگر نمره ثبت شده بود، این دکمه برای اعتراض ظاهر می‌شود *@
+                    @if (enrollment.Grade.HasValue)
+                    {
+                        <a href="/Student/SubmitAppeal?enrollmentId=@enrollment.Id" class="btn btn-warning btn-sm">Appeal Grade</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

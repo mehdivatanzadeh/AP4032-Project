@@ -1,0 +1,27 @@
+﻿@model ap_project_final.Models.Enrollment
+
+@{
+    ViewData["Title"] = "Submit Grade Appeal";
+}
+
+<h1>Submit Appeal for @Model.Course.Title</h1>
+<p>Your current grade: <strong>@Model.Grade</strong></p>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="SubmitAppeal" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="enrollmentId" value="@Model.Id" />
+
+            <div class="form-group">
+                <label>Your reason for appealing:</label>
+                <textarea name="studentMessage" class="form-control" rows="5" required></textarea>
+            </div>
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Submit Appeal" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>

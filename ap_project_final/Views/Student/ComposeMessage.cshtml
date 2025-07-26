@@ -1,0 +1,27 @@
+﻿@model ap_project_final.Models.Message
+
+@{
+    ViewData["Title"] = "Send Message";
+    var receiverProfessor = ViewBag.ReceiverProfessor as ap_project_final.Models.Professor;
+}
+
+<h2>Send Message to @receiverProfessor.FirstName @receiverProfessor.LastName</h2>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="ComposeMessage" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="receiverProfessorId" value="@receiverProfessor.Id" />
+
+            <div class="form-group">
+                <label>Your Message:</label>
+                <textarea name="content" class="form-control" rows="5" required></textarea>
+            </div>
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Send" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
