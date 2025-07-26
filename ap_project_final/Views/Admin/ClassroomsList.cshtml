@@ -19,6 +19,10 @@
                 <td>@c.Building</td>
                 <td>@c.RoomNumber</td>
                 <td>@c.Capacity</td>
+                <form method="post" asp-action="DeleteClassroom" asp-route-id="@c.Id" style="display:inline;">
+
+                <td>  <button type="submit">Remove</button></td>
+                </form>
             </tr>
         }
     </tbody>

@@ -39,17 +39,15 @@ namespace ap_project_final.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RemoveStudentFromCourse(int enrollmentId)
+        public IActionResult RemoveStudentFromCourse(int courseId, string studentId)
         {
-            var enrollment = await _context.Enrollments.FindAsync(enrollmentId);
-            if (enrollment == null) return NotFound();
-
-            int courseId = enrollment.CourseId;
-            _context.Enrollments.Remove(enrollment);
-            await _context.SaveChangesAsync();
-
-            TempData["Message"] = "Student removed from class successfully.";
-            return RedirectToAction("CourseDetails", new { courseId = courseId });
+            var enrollment = _context.Enrollments.FirstOrDefault(e => e.CourseId == courseId && e.Student.StudentId == studentId);
+            if (enrollment != null)
+            {
+                _context.Enrollments.Remove(enrollment);
+                _context.SaveChanges();
+            }
+            return RedirectToAction("ManageParticipants", new { id = courseId });
         }
         /*public async Task<IActionResult> ManageParticipants(int courseId)
         {
@@ -117,5 +115,31 @@ namespace ap_project_final.Controllers
                 return RedirectToAction("Login", "Account");
             return View(instructor);
         }
+        public IActionResult ManageParticipants(int id)
+        {
+            var course = _context.Courses.Include(c => c.Professor)
+                .Include(c => c.Enrollments).ThenInclude(c => c.Student)
+                .FirstOrDefault(c => c.Id == id);
+            if (course == null)
+            {
+                return NotFound();
+            }
+            return View(course);
+        }
+
+        [HttpPost]
+        public IActionResult UpdateStudentGrade(int enrollmentId, int grade)
+        {
+            var enrollment = _context.Enrollments.Find(enrollmentId);
+            if (enrollment == null)
+                return NotFound();
+
+            enrollment.Grade = grade;
+            _context.SaveChanges();
+
+            // Redirect back to the same page, or adjust as needed
+            return RedirectToAction("ManageParticipants", new { id = enrollment.CourseId });
+        }
+
     }
 }

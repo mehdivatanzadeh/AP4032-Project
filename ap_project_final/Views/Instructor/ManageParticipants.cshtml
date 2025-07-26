@@ -1,1 +1,35 @@
-﻿
+﻿<h2>Manage Participants for @Model.CourseCode</h2>
+
+<!-- Show course details -->
+<p>Title: @Model.Title</p>
+<p>Professor: @Model.Professor.LastName</p>
+<!-- etc. -->
+
+<h3>Enrolled Students:</h3>
+<ul style="list-style:none; padding:0;">
+    @if (Model.Enrollments != null)
+    {
+        @foreach (var enrollment in Model.Enrollments)
+        {
+            <li style="margin-bottom:10px;">
+                <div style="display:flex; align-items:center;">
+                    <span style="width:200px;">@enrollment.Student.LastName</span>
+                    <label style="margin-left:20px; margin-right:10px;">Grade:</label>
+                    <form method="post" asp-action="UpdateStudentGrade" asp-route-enrollmentId="@enrollment.Id" style="margin:0;">
+                        <input type="number" name="grade" value="@enrollment.Grade" style="width:80px; margin-right:10px;" />
+                        <button type="submit" class="btn btn-primary btn-sm;">Save</button>
+                    </form>
+                </div>
+            </li>
+        }
+    }
+</ul>
+
+<h4>Remove Student by ID</h4>
+<form method="post" asp-action="RemoveStudentFromCourse" asp-route-courseId="@Model.Id">
+    <input type="text" name="studentId" placeholder="Enter Student ID" class="form-control" style="width:200px;" />
+    <button type="submit" class="btn btn-danger" style="margin-top:10px;">Remove Student</button>
+</form>
+
+<!-- Link back or other actions -->
+<a href="/Instructor/Index">Back</a>

@@ -7,6 +7,7 @@
         public string InstructorName { get; set; }
         public string ClassTime { get; set; }
         public string ExamTime { get; set; }
+        public string ClassDay { get; set; }
         public decimal? Score { get; set; }
     }
 }

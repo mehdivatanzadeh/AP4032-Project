@@ -197,13 +197,15 @@ namespace ap_project_final.Controllers
         public async Task<IActionResult> AddCourse(Course course)
         {
             // Server-side validation
-            
-                // Repopulate dropdowns if validation fails
-               
 
-               
-            
+            // Repopulate dropdowns if validation fails
 
+
+
+
+            course.Enrollments = null;
+            course.Professor = _context.Professors.First(p => p.Id == course.ProfessorId);
+            if (course.Professor == null) return NotFound();
             // Save course with selected professor and classroom
             _context.Courses.Add(course);
             await _context.SaveChangesAsync();
@@ -245,6 +247,19 @@ namespace ap_project_final.Controllers
                 await _context.SaveChangesAsync();
             }
             return RedirectToAction("CoursesList");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteClassroom(int id)
+        {
+            var classroom = await _context.Classrooms.FindAsync(id);
+            if (classroom != null)
+            {
+                _context.Classrooms.Remove(classroom);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction("ClassroomsList");
         }
 
         // --- Complex Logic ---
@@ -292,27 +307,16 @@ namespace ap_project_final.Controllers
             };
             return View(model);
         }
-        public IActionResult ManageParticipants(int courseId)
+        public IActionResult ManageParticipants(int id)
         {
-            var course = _context.Courses
-                .Include(c => c.Professor)    // Assumed navigation property
-                .Include(c => c.Enrollments).ThenInclude(e => e.Student) // List of enrolled students
-                .FirstOrDefault(c => c.Id == courseId);
-
+            var course = _context.Courses.Include(c => c.Professor)
+                .Include(c => c.Enrollments).ThenInclude(c => c.Student)
+                .FirstOrDefault(c => c.Id == id);
             if (course == null)
-                return NotFound();
-
-            var viewModel = new ManageParticipantsViewModel
             {
-                CourseId = course.Id,
-                CourseName = course.CourseCode,
-                CurrentProfessorId = course.Professor?.Id ?? 0,
-                CurrentProfessorName = course.Professor?.LastName ?? "None",
-                AllProfessors = _context.Professors.ToList(),
-                Students = course.Enrollments.Select(e => e.Student).ToList()
-            };
-
-            return View(viewModel);
+                return NotFound();
+            }
+            return View(course);
         }
 
         // Change professor
@@ -326,7 +330,7 @@ namespace ap_project_final.Controllers
             var professor = _context.Professors.Find(newProfessorId);
             if (professor == null)
                 return NotFound();
-
+            
             course.Professor = professor;
             _context.SaveChanges();
 
@@ -338,20 +342,26 @@ namespace ap_project_final.Controllers
         public IActionResult AddStudentToCourse(int courseId, string studentId)
         {
             if (string.IsNullOrEmpty(studentId))
-                return RedirectToAction("ManageParticipants", new { courseId });
+                return RedirectToAction($"ManageParticipants/{courseId}");
 
             var student = _context.Students.FirstOrDefault(s => s.StudentId == studentId);
             if (student == null)
-                return RedirectToAction("ManageParticipants", new { courseId });
+                return RedirectToAction($"ManageParticipants/{courseId}");
 
             if (!_context.Enrollments.Any(e => e.CourseId == courseId && e.Student.StudentId == studentId))
             {
-                var enrollment = new Enrollment { CourseId = courseId, Student = student };
+                var enrollment = new Enrollment { CourseId = courseId, Student = student, Course = _context.Courses.First(c => c.Id == courseId)  };
+                if (enrollment == null) return NotFound();
+                var course = _context.Courses.First(c => c.Id == courseId);
+                if (course == null) return NotFound();
+                _context.SaveChanges();
                 _context.Enrollments.Add(enrollment);
                 _context.SaveChanges();
             }
+            
 
-            return RedirectToAction("ManageParticipants", new { courseId });
+
+                return RedirectToAction("ManageParticipants", new { id = courseId });
         }
 
         // Remove student by ID
@@ -364,7 +374,7 @@ namespace ap_project_final.Controllers
                 _context.Enrollments.Remove(enrollment);
                 _context.SaveChanges();
             }
-            return RedirectToAction("ManageParticipants", new { courseId });
+            return RedirectToAction("ManageParticipants", new { id = courseId });
         }
         [HttpPost]
         public IActionResult UpdateInstructor(int courseId, int InstructorId)

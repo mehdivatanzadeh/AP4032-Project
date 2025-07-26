@@ -10,8 +10,6 @@
         public List<Professor> AllProfessors { get; set; }
         public List<Student> Students { get; set; }
 
-        public string NewStudentId { get; set; } // for adding student
-        public string RemoveStudentId { get; set; } // for removing student
-        public int SelectedProfessorId { get; set; } // for changing professor
+        
     }
 }

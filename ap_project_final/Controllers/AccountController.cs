@@ -49,23 +49,27 @@ public class AccountController : Controller
         {
            
                 var Professor = await _context.Professors.FirstOrDefaultAsync(i => i.ProfessorId ==username);
-                if (Professor != null && Professor.Password == password)
-                {
-                    await SignInUser(Professor.Id.ToString(), Professor.FirstName + " " + Professor.LastName, role);
-                    return RedirectToAction("Index", "Instructor");
-                }
-            
+            if (Professor != null && Professor.Password == password)
+            {
+                await SignInUser(Professor.Id.ToString(), Professor.FirstName + " " + Professor.LastName, role);
+                return RedirectToAction("Index", "Instructor");
+            }
+            ViewBag.Error = "Invalid credentials.";
+            return View();
+
         }
         else if (role == "Student")
         {
             
                 var student = await _context.Students.FirstOrDefaultAsync(i => i.StudentId == username);
-                if (student != null && student.Password == password)
-                {
-                    await SignInUser(student.Id.ToString(), student.FirstName + " " + student.LastName, role);
-                    return RedirectToAction("Index", "Student");
-                
+            if (student != null && student.Password == password)
+            {
+                await SignInUser(student.Id.ToString(), student.FirstName + " " + student.LastName, role);
+                return RedirectToAction("Index", "Student");
+
             }
+            ViewBag.Error = "Invalid credentials.";
+            return View();
         }
 
         // If here, login failed

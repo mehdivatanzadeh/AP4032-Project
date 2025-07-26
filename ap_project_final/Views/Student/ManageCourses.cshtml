@@ -7,8 +7,11 @@
         @foreach (var course in Model)
     {
         <li>
-            <a href="/Student/CourseDetails/@course.Id"/a>
-            <form method="post" asp-action="RemoveCourse" asp-route-courseId="@course.Id" style="display:inline;">
+            <span style="display:inline-block;">
+                @course.CourseCode
+            </span>
+            <a href="/Student/CourseDetails/@course.Id" style="margin-left:10px;">Details</a>
+            <form method="post" asp-action="DropCourse" asp-route-courseId="@course.Id" style="display:inline;">
                 <button type="submit">Remove</button>
             </form>
         </li>

@@ -1,42 +1,33 @@
-﻿@model ap_project_final.Models.ManageParticipantsViewModel
+﻿@model ap_project_final.Models.Course
 
-<h2>Manage Participants for @Model.CourseName</h2>
+<h2>Manage Participants for @Model.CourseCode</h2>
 
-<h3>Current Professor</h3>
-<p>@Model.CurrentProfessorName</p>
-
-<form method="post" asp-action="ChangeProfessor" asp-route-courseId="@Model.CourseId">
-    <label for="professorSelect">Change Professor:</label>
-    <select id="professorSelect" name="newProfessorId" class="form-control" style="width:200px;">
-        @foreach (var prof in Model.AllProfessors)
-        {
-            <option value="@prof.Id" >
-                @prof.LastName
-            </option>
-        }
-    </select>
-    <button type="submit" class="btn btn-primary" style="margin-top:10px;">Change</button>
-</form>
-
-<h3>Students</h3>
+<!-- Show course details -->
+<p>Title: @Model.Title</p>
+<p>Professor: @Model.Professor.LastName</p>
+<!-- etc. -->
+<!-- List students -->
+<h3>Enrolled Students:</h3>
 <ul>
-    @foreach (var student in Model.Students)
+    @if(Model.Enrollments!=null){
+    @foreach (var enrollment in Model.Enrollments)
     {
-        <li>@student.LastName</li>
+        <li>@enrollment.Student.LastName</li>
+    }
     }
 </ul>
 
 <h4>Add Student by ID</h4>
-<form method="post" asp-action="AddStudent" asp-route-courseId="@Model.CourseId">
+<form method="post" asp-action="AddStudentToCourse" asp-route-courseId="@Model.Id">
     <input type="text" name="studentId" placeholder="Enter Student ID" class="form-control" style="width:200px;" />
     <button type="submit" class="btn btn-success" style="margin-top:10px;">Add Student</button>
 </form>
 
 <h4>Remove Student by ID</h4>
-<form method="post" asp-action="RemoveStudent" asp-route-courseId="@Model.CourseId">
+<form method="post" asp-action="RemoveStudentFromCourse" asp-route-courseId="@Model.Id">
     <input type="text" name="studentId" placeholder="Enter Student ID" class="form-control" style="width:200px;" />
     <button type="submit" class="btn btn-danger" style="margin-top:10px;">Remove Student</button>
 </form>
 
-<br />
-<a href="/Admin/CoursesList" class="btn btn-secondary">Back to Courses</a>
+<!-- Link back or other actions -->
+<a href="/Admin/Index">Back</a>

@@ -10,7 +10,7 @@
     @foreach (var course in Model)
     {
         <li>
-            <a href="/Instructor/ManageParticipants/@course.Id">Manage Participants</a>
+            <a href="/Instructor/ManageParticipants/@course.Id">@course.CourseCode</a>
         </li>
     }
 </ul>
