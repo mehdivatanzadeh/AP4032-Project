@@ -1,5 +1,12 @@
 ﻿@model ap_project_final.Models.Course
 
+@if (ViewBag.Error != null)
+{
+    <div style="color:red;">
+        <strong>@ViewBag.Error</strong>
+    </div>
+}
+
 <h3>Add Course</h3>
 
 <form method="post" asp-action="AddCourse" asp-controller="Admin" style="max-width:500px; margin:auto;">

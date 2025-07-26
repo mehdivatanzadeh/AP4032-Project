@@ -36,8 +36,12 @@ namespace ap_project_final.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddInstructor(Professor professor)
         {
-           
-                _context.Add(professor);
+            if (_context.Professors.Any(s => s.Email == professor.Email || s.ProfessorId == professor.ProfessorId))
+            {
+                ViewBag.Error = "Email or Professor Id already exists.";
+                return View();
+            }
+            _context.Add(professor);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("ManageUsers");
             
@@ -69,24 +73,15 @@ namespace ap_project_final.Controllers
         [HttpPost]
         public async Task<IActionResult> RemoveInstructor(string instructorId)
         {
-            if (int.TryParse(instructorId, out int id))
-            {
+            
                 var instructor = await _context.Professors.FirstOrDefaultAsync(i => i.ProfessorId == instructorId);
-                if (instructor != null)
-                {
+                
                     _context.Professors.Remove(instructor);
                     await _context.SaveChangesAsync();
                     TempData["Message"] = "Instructor removed successfully.";
-                }
-                else
-                {
-                    TempData["Error"] = "Instructor not found.";
-                }
-            }
-            else
-            {
-                TempData["Error"] = "Invalid Instructor ID.";
-            }
+                
+                
+            
             return RedirectToAction("ManageUsers"); // Adjust based on your view
         }
 
@@ -107,7 +102,11 @@ namespace ap_project_final.Controllers
         public async Task<IActionResult> AddStudent(Student student)
         {
             
-                TempData["Message"] = "Student added successfully!";
+                if(_context.Students.Any(s => s.Email==student.Email || s.StudentId == student.StudentId))
+            {
+                ViewBag.Error = "Email or Student Id already exists.";
+                return View();
+            }
                 _context.Add(student);
                 await _context.SaveChangesAsync();
                 
@@ -152,7 +151,7 @@ namespace ap_project_final.Controllers
                 {
                     _context.Students.Remove(student);
                     await _context.SaveChangesAsync();
-                    TempData["Message"] = "Student removed successfully.";
+                    
                 }
                 else
                 {
@@ -207,6 +206,18 @@ namespace ap_project_final.Controllers
             course.Professor = _context.Professors.First(p => p.Id == course.ProfessorId);
             if (course.Professor == null) return NotFound();
             // Save course with selected professor and classroom
+            if (_context.Courses.Any(c => c.Professor == course.Professor && c.StartTime == course.StartTime && c.ClassDay==course.ClassDay))
+            {
+                ViewBag.Error = "Time conflict detected for the professor.";
+                return View();
+
+            }
+            if (_context.Courses.Any(c => c.ClassroomId == course.ClassroomId && c.StartTime == course.StartTime && c.ClassDay==course.ClassDay))
+            {
+                ViewBag.Error = "Time conflict detected for the classroom.";
+                return View();
+
+            }
             _context.Courses.Add(course);
             await _context.SaveChangesAsync();
 
@@ -214,26 +225,50 @@ namespace ap_project_final.Controllers
             return RedirectToAction("CoursesList");
         }
 
-        public async Task<IActionResult> EditCourse(int? id)
+        public IActionResult EditCourse(int id)
         {
-            if (id == null) return NotFound();
-            var course = await _context.Courses.FindAsync(id);
-            if (course == null) return NotFound();
-            return View(course);
+            var course = _context.Courses
+                .Include(c => c.Professor)
+                .Include(c => c.Classroom)
+                // include other navigations if needed
+                .FirstOrDefault(c => c.Id == id);
+
+            if (course == null)
+                return NotFound();
+
+            // Prepare ViewBag items for dropdowns, e.g.,
+            ViewBag.Professors = new SelectList(_context.Professors, "Id", "FullName", course.ProfessorId);
+            ViewBag.Classrooms = new SelectList(_context.Classrooms, "Id", "Name", course.ClassroomId);
+
+            return View(course); // Pass course as model
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditCourse(int id, Course course)
+        public IActionResult EditCourse(int id, Course model)
         {
-            if (id != course.Id) return NotFound();
+            if (id != model.Id)
+                return BadRequest();
+
             if (ModelState.IsValid)
             {
-                _context.Update(course);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(CoursesList));
+                try
+                {
+                    _context.Update(model);
+                    _context.SaveChanges();
+                    return RedirectToAction("ManageParticipants", new { id = model.Id });
+                }
+                catch (Exception ex)
+                {
+                    // handle errors
+                    ViewBag.Error = "Error saving data.";
+                }
             }
-            return View(course);
+
+            // If validation fails, redisplay with dropdowns
+            ViewBag.Professors = new SelectList(_context.Professors, "Id", "FullName", model.ProfessorId);
+            ViewBag.Classrooms = new SelectList(_context.Classrooms, "Id", "Name", model.ClassroomId);
+            return View(model);
         }
 
         [HttpPost]
@@ -350,10 +385,26 @@ namespace ap_project_final.Controllers
 
             if (!_context.Enrollments.Any(e => e.CourseId == courseId && e.Student.StudentId == studentId))
             {
+               
                 var enrollment = new Enrollment { CourseId = courseId, Student = student, Course = _context.Courses.First(c => c.Id == courseId)  };
                 if (enrollment == null) return NotFound();
                 var course = _context.Courses.First(c => c.Id == courseId);
                 if (course == null) return NotFound();
+                if (course.Enrollments != null)
+                {
+                    if (_context.Classrooms.First(c => c.Id == course.ClassroomId).Capacity <= _context.Enrollments.Select(e => e.CourseId==courseId).ToList().Count())
+                    {
+                        ViewBag.Error = "Classroom is full.";
+                        return RedirectToAction("ManageParticipants", new { id = courseId });
+
+                    }
+                }
+                if(_context.Enrollments.Any(e => e.Student.StudentId == studentId && e.Course.StartTime == course.StartTime))
+                {
+                    ViewBag.Error = "Time conflict detected for the student.";
+                    return RedirectToAction("ManageParticipants", new { id=courseId });
+                }
+                
                 _context.SaveChanges();
                 _context.Enrollments.Add(enrollment);
                 _context.SaveChanges();

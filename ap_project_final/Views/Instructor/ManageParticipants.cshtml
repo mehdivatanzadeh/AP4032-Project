@@ -1,8 +1,15 @@
-﻿<h2>Manage Participants for @Model.CourseCode</h2>
+﻿@model ap_project_final.Models.Course
+@if (ViewBag.Error != null)
+{
+    <div style="color:red;">
+        <strong>@ViewBag.Error</strong>
+    </div>
+}
+<h2>Manage Participants for @Model.Title-@Model.CourseCode</h2>
 
 <!-- Show course details -->
 <p>Title: @Model.Title</p>
-<p>Professor: @Model.Professor.LastName</p>
+<p>Professor: @Model.Professor.FirstName @Model.Professor.LastName - @Model.Professor.ProfessorId</p>
 <!-- etc. -->
 
 <h3>Enrolled Students:</h3>
@@ -13,7 +20,7 @@
         {
             <li style="margin-bottom:10px;">
                 <div style="display:flex; align-items:center;">
-                    <span style="width:200px;">@enrollment.Student.LastName</span>
+                    <span style="width:200px;">@enrollment.Student.FirstName @enrollment.Student.LastName - @enrollment.Student.StudentId</span>
                     <label style="margin-left:20px; margin-right:10px;">Grade:</label>
                     <form method="post" asp-action="UpdateStudentGrade" asp-route-enrollmentId="@enrollment.Id" style="margin:0;">
                         <input type="number" name="grade" value="@enrollment.Grade" style="width:80px; margin-right:10px;" />
@@ -32,4 +39,4 @@
 </form>
 
 <!-- Link back or other actions -->
-<a href="/Instructor/Index">Back</a>
+<a href="/Instructor/ManageCourses">Back</a>

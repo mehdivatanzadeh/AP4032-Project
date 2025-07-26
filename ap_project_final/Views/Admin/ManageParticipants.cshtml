@@ -1,18 +1,26 @@
 ﻿@model ap_project_final.Models.Course
 
+@if (ViewBag.Error != null)
+{
+    <div style="color:red;">
+        <strong>@ViewBag.Error</strong>
+    </div>
+}
+
 <h2>Manage Participants for @Model.CourseCode</h2>
 
 <!-- Show course details -->
-<p>Title: @Model.Title</p>
-<p>Professor: @Model.Professor.LastName</p>
+<p>Title: @Model.Title-@Model.CourseCode</p>
+<p>Professor: @Model.Professor.FirstName @Model.Professor.LastName</p>
 <!-- etc. -->
 <!-- List students -->
+
 <h3>Enrolled Students:</h3>
 <ul>
     @if(Model.Enrollments!=null){
     @foreach (var enrollment in Model.Enrollments)
     {
-        <li>@enrollment.Student.LastName</li>
+            <li>@enrollment.Student.FirstName @enrollment.Student.LastName - @enrollment.Student.StudentId</li>
     }
     }
 </ul>

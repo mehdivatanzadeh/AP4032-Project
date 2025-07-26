@@ -10,7 +10,7 @@
     @foreach (var student in Model.Students)
     {
         <li>
-            @student.LastName
+            @student.LastName @student.StudentId
             
         </li>
     }
@@ -22,7 +22,7 @@
     @foreach (var instructor in Model.Professors)
     {
         <li>
-            @instructor.LastName
+            @instructor.LastName @instructor.ProfessorId
             
         </li>
     }

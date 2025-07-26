@@ -2,6 +2,13 @@
 @{
     ViewBag.Title = "Add Instructor";
 }
+
+@if (ViewBag.Error != null)
+{
+    <div style="color:red;">
+        <strong>@ViewBag.Error</strong>
+    </div>
+}
 <h2>Add Instructor</h2>
 <form method="post" asp-action="AddInstructor">
     <div>

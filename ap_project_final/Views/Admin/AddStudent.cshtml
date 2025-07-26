@@ -1,6 +1,13 @@
 ﻿@model ap_project_final.Models.Student
 <h3>Add Student</h3>
 
+@if (ViewBag.Error != null)
+{
+    <div style="color:red;">
+        <strong>@ViewBag.Error</strong>
+    </div>
+}
+
 <form method="post" asp-action="AddStudent" asp-controller="Admin" style="max-width:400px; margin:auto;">
     @Html.AntiForgeryToken()
     <!-- Student ID -->

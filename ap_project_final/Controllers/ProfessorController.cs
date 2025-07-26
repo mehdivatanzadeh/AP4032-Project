@@ -27,7 +27,7 @@ namespace ap_project_final.Controllers
 
             if (grade.HasValue && (grade < 0 || grade > 20))
             {
-                TempData["Error"] = "Grade must be between 0 and 20.";
+                ViewBag.Error = "Grade must be between 0 and 20.";
                 return RedirectToAction("CourseDetails", new { courseId = enrollment.CourseId });
             }
 
@@ -133,7 +133,11 @@ namespace ap_project_final.Controllers
             var enrollment = _context.Enrollments.Find(enrollmentId);
             if (enrollment == null)
                 return NotFound();
-
+            if(grade<0 || grade > 20)
+            {
+                TempData["Error"] = "Grade must be between 0 and 20.";
+                return RedirectToAction("ManageParticipants", new { id = enrollment.CourseId });
+            }
             enrollment.Grade = grade;
             _context.SaveChanges();
 
